@@ -3,148 +3,175 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📢 Info Klub</title>
+  <title>Event Manager</title>
   <style>
     body {
-      font-family: "Poppins", sans-serif;
-      background: #f4f6f9;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
       margin: 0;
       padding: 20px;
     }
-    h2 {
+
+    h1 {
       text-align: center;
-      color: #222;
     }
-    .event {
-      background: #fff;
-      margin: 10px auto;
+
+    .event-form {
+      background: white;
       padding: 15px;
       border-radius: 10px;
-      max-width: 500px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
-    .event h4 {
-      margin: 0 0 5px;
-      color: #2b2b2b;
+
+    input, textarea, button {
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
-    .event p {
-      margin: 0;
-      color: #555;
-      font-size: 14px;
+
+    .event-list {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .btn {
-      background: #4CAF50;
+
+    .event {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+
+    .admin-controls {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .admin-controls button {
+      background-color: #ff4444;
       color: white;
       border: none;
-      padding: 8px 12px;
-      margin-top: 10px;
-      border-radius: 5px;
+      padding: 10px 15px;
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: bold;
     }
-    .btn:hover { background: #43a047; }
-    #add-section {
-      display: none;
-      max-width: 500px;
-      margin: 20px auto;
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    input, textarea {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-family: inherit;
-    }
-    #delete-all {
-      display: none;
-      background: #e53935;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      margin: 10px auto;
-      border-radius: 5px;
-      cursor: pointer;
-      max-width: 500px;
-      display: block;
+
+    .admin-controls button:hover {
+      background-color: #e22;
     }
   </style>
 </head>
 <body>
-  <h2>📢 Info Klub</h2>
 
-  <!-- Tempat muncul event -->
-  <div id="event-list"></div>
+  <h1>📅 Manajemen Event</h1>
 
-  <!-- Bagian tambah event (khusus admin) -->
-  <div id="add-section">
-    <input id="title" placeholder="Judul event...">
-    <textarea id="desc" placeholder="Deskripsi event..." rows="3"></textarea>
-    <button class="btn" onclick="addEvent()">Tambah Event</button>
+  <div class="event-form">
+    <h3>Tambah Event</h3>
+    <input type="text" id="judulEvent" placeholder="Judul event">
+    <textarea id="deskripsiEvent" placeholder="Deskripsi event"></textarea>
+    <button onclick="tambahEvent()">Tambah</button>
   </div>
 
-  <!-- Tombol hapus semua -->
-  <button id="delete-all" onclick="deleteAll()">🗑️ Hapus Semua Event</button>
+  <div class="event-list" id="eventList">
+    <h3>Daftar Event</h3>
+    <div id="events"></div>
+  </div>
+
+  <div class="admin-controls">
+    <button id="deleteAllButton" onclick="hapusSemuaEvent()">🗑️ Hapus Semua Event</button>
+  </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const isAdmin = params.get('admin') === 'true';
-    const eventList = document.getElementById('event-list');
-    const addSection = document.getElementById('add-section');
-    const deleteAllBtn = document.getElementById('delete-all');
-    let events = JSON.parse(localStorage.getItem('events') || '[]');
+    // === KONFIGURASI ADMIN ===
+    const isAdmin = true; // ubah ke false untuk user biasa
 
-    function showEvents() {
-      if (events.length === 0) {
-        eventList.innerHTML = "<p style='text-align:center;color:#777;'>Belum ada info terbaru.</p>";
+    // === INISIALISASI ===
+    const eventsContainer = document.getElementById("events");
+    const deleteAllButton = document.getElementById("deleteAllButton");
+
+    // Sembunyikan tombol jika bukan admin
+    if (!isAdmin) {
+      deleteAllButton.style.display = "none";
+    }
+
+    // === FUNGSI TAMBAH EVENT ===
+    function tambahEvent() {
+      const judul = document.getElementById("judulEvent").value.trim();
+      const deskripsi = document.getElementById("deskripsiEvent").value.trim();
+
+      if (!judul) {
+        alert("Judul event tidak boleh kosong!");
         return;
       }
 
-      eventList.innerHTML = events.map((e, i) => `
-        <div class='event'>
-          <h4>${e.title}</h4>
-          <p>${e.desc}</p>
-          ${isAdmin ? `<button class="btn" style="background:#e53935;" onclick="deleteEvent(${i})">Hapus</button>` : ''}
-        </div>
-      `).join('');
+      const eventBaru = {
+        id: Date.now(),
+        judul,
+        deskripsi,
+      };
+
+      const semuaEvent = JSON.parse(localStorage.getItem("events")) || [];
+      semuaEvent.push(eventBaru);
+      localStorage.setItem("events", JSON.stringify(semuaEvent));
+
+      tampilkanEvent();
+      document.getElementById("judulEvent").value = "";
+      document.getElementById("deskripsiEvent").value = "";
     }
 
-    function addEvent() {
-      const title = document.getElementById('title').value.trim();
-      const desc = document.getElementById('desc').value.trim();
-      if (!title || !desc) return alert('Isi semua kolom dulu!');
-      events.unshift({ title, desc, time: new Date().toLocaleString() });
-      localStorage.setItem('events', JSON.stringify(events));
-      showEvents();
-      document.getElementById('title').value = '';
-      document.getElementById('desc').value = '';
+    // === FUNGSI TAMPILKAN EVENT ===
+    function tampilkanEvent() {
+      const semuaEvent = JSON.parse(localStorage.getItem("events")) || [];
+      eventsContainer.innerHTML = "";
+
+      if (semuaEvent.length === 0) {
+        eventsContainer.innerHTML = "<p>Belum ada event.</p>";
+        return;
+      }
+
+      semuaEvent.forEach(e => {
+        const div = document.createElement("div");
+        div.className = "event";
+        div.innerHTML = `
+          <strong>${e.judul}</strong><br>
+          <small>${e.deskripsi || "(tanpa deskripsi)"}</small><br>
+          ${isAdmin ? `<button onclick="hapusEvent(${e.id})">Hapus</button>` : ""}
+        `;
+        eventsContainer.appendChild(div);
+      });
     }
 
-    function deleteEvent(index) {
-      if (confirm('Yakin mau hapus event ini?')) {
-        events.splice(index, 1);
-        localStorage.setItem('events', JSON.stringify(events));
-        showEvents();
+    // === FUNGSI HAPUS EVENT SATUAN ===
+    function hapusEvent(id) {
+      if (!isAdmin) {
+        alert("Anda tidak memiliki izin untuk menghapus event ini!");
+        return;
+      }
+      const semuaEvent = JSON.parse(localStorage.getItem("events")) || [];
+      const baru = semuaEvent.filter(e => e.id !== id);
+      localStorage.setItem("events", JSON.stringify(baru));
+      tampilkanEvent();
+    }
+
+    // === FUNGSI HAPUS SEMUA EVENT ===
+    function hapusSemuaEvent() {
+      if (!isAdmin) {
+        alert("Anda tidak memiliki izin untuk melakukan ini!");
+        return;
+      }
+      if (confirm("⚠️ Yakin ingin menghapus semua event?")) {
+        localStorage.removeItem("events");
+        alert("Semua event berhasil dihapus!");
+        tampilkanEvent();
       }
     }
 
-    function deleteAll() {
-      if (confirm('Hapus semua event?')) {
-        events = [];
-        localStorage.removeItem('events');
-        showEvents();
-      }
-    }
-
-    if (isAdmin) {
-      addSection.style.display = 'block';
-      deleteAllBtn.style.display = 'block';
-    }
-
-    showEvents();
+    // Jalankan saat halaman dibuka
+    tampilkanEvent();
   </script>
+
 </body>
 </html>
