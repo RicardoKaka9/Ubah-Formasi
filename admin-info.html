@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚙️ Admin Info</title>
+  <style>
+    body { font-family: Poppins, sans-serif; background:#fafafa; padding:20px; }
+    h2 { text-align:center; }
+    input, select, button {
+      padding:8px;
+      margin:5px;
+      border-radius:5px;
+      border:1px solid #ccc;
+    }
+    button {
+      background:#007bff; color:white; cursor:pointer;
+    }
+    #eventContainer .card {
+      background:white;
+      padding:10px;
+      margin:10px 0;
+      border-radius:8px;
+      box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h2>🧑‍💼 Admin Info Event</h2>
+  <select id="iconSelect">
+    <option value="⚽">⚽ Pertandingan</option>
+    <option value="💰">💰 Transfer</option>
+    <option value="🚑">🚑 Cedera</option>
+    <option value="📈">📈 Kenaikan OVR</option>
+    <option value="📉">📉 Penurunan OVR</option>
+    <option value="🔥">🔥 Kontroversi</option>
+  </select>
+  <input type="text" id="eventInput" placeholder="Tulis info baru...">
+  <button id="addEvent">Tambah Event</button>
+  <button id="clearEvents" style="background:red;">Hapus Semua Event</button>
+
+  <div id="eventContainer"></div>
+
+  <script>
+    const eventContainer = document.getElementById("eventContainer");
+
+    function loadEvents() {
+      eventContainer.innerHTML = "";
+      const events = JSON.parse(localStorage.getItem("events") || "[]");
+      events.slice().reverse().forEach(ev => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.textContent = `${ev.date} - ${ev.icon} ${ev.text}`;
+        eventContainer.appendChild(div);
+      });
+    }
+
+    document.getElementById("addEvent").onclick = () => {
+      const icon = document.getElementById("iconSelect").value;
+      const text = document.getElementById("eventInput").value.trim();
+      if (!text) return alert("Tulis dulu info-nya!");
+      const newEvent = {
+        icon,
+        text,
+        date: new Date().toLocaleDateString("id-ID", { day:'2-digit', month:'short', year:'numeric' })
+      };
+      const events = JSON.parse(localStorage.getItem("events") || "[]");
+      events.push(newEvent);
+      localStorage.setItem("events", JSON.stringify(events));
+      document.getElementById("eventInput").value = "";
+      loadEvents();
+    };
+
+    document.getElementById("clearEvents").onclick = () => {
+      if (confirm("Yakin mau hapus semua event?")) {
+        localStorage.removeItem("events");
+        loadEvents();
+      }
+    };
+
+    loadEvents();
+  </script>
+</body>
+</html>
