@@ -1,69 +1,121 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Info</title>
-  <style>
-    body { font-family: Arial; margin: 20px; background: #f4f4f4; }
-    h1 { text-align: center; }
-    .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
-    button { padding: 8px 12px; border: none; background: #2196F3; color: white; border-radius: 6px; cursor: pointer; }
-    button.delete { background: #f44336; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Info Admin - Event Management</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+  }
+  #eventList {
+    margin-top: 20px;
+  }
+  .event-card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+  }
+  .delete-btn {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 5px 8px;
+  }
+  .delete-btn:hover {
+    background: darkred;
+  }
+  button {
+    margin: 5px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  #addEventBtn {
+    background: #2563eb;
+    color: white;
+  }
+  #clearAllBtn {
+    background: #ef4444;
+    color: white;
+  }
+</style>
 </head>
 <body>
-  <h1>Panel Admin Info</h1>
 
-  <div>
-    <input id="judul" placeholder="Judul Event" />
-    <input id="deskripsi" placeholder="Deskripsi Event" />
-    <button onclick="tambahEvent()">Tambah Event</button>
-    <button class="delete" onclick="hapusSemua()">Hapus Semua Event</button>
-  </div>
+<h1>📰 Info Admin Panel</h1>
+<button id="addEventBtn">Tambah Event</button>
+<button id="clearAllBtn">Hapus Semua Event</button>
 
-  <div id="list"></div>
+<div id="eventList"></div>
 
-  <script>
-    function ambilEvent() {
-      const data = JSON.parse(localStorage.getItem('events') || '[]');
-      const list = document.getElementById('list');
-      list.innerHTML = '';
-      data.forEach((ev, i) => {
-        list.innerHTML += `
-          <div class="card">
-            <h3>${ev.judul}</h3>
-            <p>${ev.deskripsi}</p>
-            <button class="delete" onclick="hapus(${i})">Hapus</button>
-          </div>`;
-      });
-    }
+<script>
+// Ambil data event dari localStorage
+let events = JSON.parse(localStorage.getItem('events')) || [];
 
-    function tambahEvent() {
-      const judul = document.getElementById('judul').value;
-      const deskripsi = document.getElementById('deskripsi').value;
-      if (!judul || !deskripsi) return alert('Isi semua kolom!');
-      const data = JSON.parse(localStorage.getItem('events') || '[]');
-      data.push({ judul, deskripsi });
-      localStorage.setItem('events', JSON.stringify(data));
-      ambilEvent();
-    }
+function renderEvents() {
+  const list = document.getElementById('eventList');
+  list.innerHTML = '';
+  events.forEach((event, index) => {
+    const div = document.createElement('div');
+    div.className = 'event-card';
+    div.innerHTML = `
+      <strong>${event.title}</strong><br>
+      <small>${event.date}</small><br>
+      <p>${event.description}</p>
+      <button class="delete-btn" onclick="deleteEvent(${index})">❌</button>
+    `;
+    list.appendChild(div);
+  });
+}
 
-    function hapus(i) {
-      const data = JSON.parse(localStorage.getItem('events') || '[]');
-      data.splice(i, 1);
-      localStorage.setItem('events', JSON.stringify(data));
-      ambilEvent();
-    }
+// Tambah event baru
+document.getElementById('addEventBtn').onclick = function() {
+  const title = prompt('Judul event:');
+  const description = prompt('Deskripsi:');
+  const date = new Date().toLocaleString('id-ID');
+  if (title && description) {
+    events.push({ title, description, date });
+    localStorage.setItem('events', JSON.stringify(events));
+    renderEvents();
+  }
+};
 
-    function hapusSemua() {
-      if (confirm('Yakin hapus semua event?')) {
-        localStorage.removeItem('events');
-        ambilEvent();
-      }
-    }
+// Hapus semua event
+document.getElementById('clearAllBtn').onclick = function() {
+  if (confirm('Yakin mau hapus semua event?')) {
+    events = [];
+    localStorage.setItem('events', JSON.stringify(events));
+    renderEvents();
+  }
+};
 
-    ambilEvent();
-  </script>
+// Hapus event tertentu
+function deleteEvent(index) {
+  if (confirm('Hapus event ini?')) {
+    events.splice(index, 1);
+    localStorage.setItem('events', JSON.stringify(events));
+    renderEvents();
+  }
+}
+
+// Tampilkan event saat halaman dibuka
+renderEvents();
+</script>
+
 </body>
 </html>
