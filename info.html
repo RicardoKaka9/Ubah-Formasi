@@ -1,64 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Event Info</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📢 Info Klub</title>
   <style>
-    body { font-family: Arial; background: #111; color: #fff; text-align: center; }
-    .event { background: #222; padding: 10px; border-radius: 8px; margin: 10px; }
-    button { padding: 8px 16px; border: none; background: #4CAF50; color: white; border-radius: 6px; }
-    input, textarea { width: 80%; padding: 8px; margin: 5px; }
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #222;
+    }
+    .event {
+      background: #fff;
+      margin: 10px auto;
+      padding: 15px;
+      border-radius: 10px;
+      max-width: 500px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .event h4 {
+      margin: 0 0 5px;
+      color: #2b2b2b;
+    }
+    .event p {
+      margin: 0;
+      color: #555;
+      font-size: 14px;
+    }
+    .btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      margin-top: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:hover { background: #43a047; }
+    #add-section {
+      display: none;
+      max-width: 500px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: inherit;
+    }
+    #delete-all {
+      display: none;
+      background: #e53935;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      margin: 10px auto;
+      border-radius: 5px;
+      cursor: pointer;
+      max-width: 500px;
+      display: block;
+    }
   </style>
 </head>
 <body>
-  <h2>📅 Daftar Event</h2>
+  <h2>📢 Info Klub</h2>
+
+  <!-- Tempat muncul event -->
   <div id="event-list"></div>
 
-  <div id="add-section" style="display:none;">
-    <h3>Tambah Event</h3>
-    <input type="text" id="title" placeholder="Judul Event"><br>
-    <textarea id="desc" placeholder="Deskripsi"></textarea><br>
-    <button onclick="addEvent()">Tambah</button>
+  <!-- Bagian tambah event (khusus admin) -->
+  <div id="add-section">
+    <input id="title" placeholder="Judul event...">
+    <textarea id="desc" placeholder="Deskripsi event..." rows="3"></textarea>
+    <button class="btn" onclick="addEvent()">Tambah Event</button>
   </div>
 
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const isAdmin = params.get('admin') === 'true';
-  const eventList = document.getElementById('event-list');
-  const addSection = document.getElementById('add-section');
-  let events = JSON.parse(localStorage.getItem('events') || '[]');
+  <!-- Tombol hapus semua -->
+  <button id="delete-all" onclick="deleteAll()">🗑️ Hapus Semua Event</button>
 
-  function showEvents() {
-    eventList.innerHTML = events.map((e, i) => `
-      <div class='event'>
-        <h4>${e.title}</h4>
-        <p>${e.desc}</p>
-        ${isAdmin ? `<button onclick="deleteEvent(${i})" style="background:#e53935;">Hapus</button>` : ''}
-      </div>
-    `).join('');
-  }
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const isAdmin = params.get('admin') === 'true';
+    const eventList = document.getElementById('event-list');
+    const addSection = document.getElementById('add-section');
+    const deleteAllBtn = document.getElementById('delete-all');
+    let events = JSON.parse(localStorage.getItem('events') || '[]');
 
-  function addEvent() {
-    const title = document.getElementById('title').value;
-    const desc = document.getElementById('desc').value;
-    if (!title || !desc) return alert('Isi semua!');
-    events.unshift({ title, desc });
-    localStorage.setItem('events', JSON.stringify(events));
-    showEvents();
-    document.getElementById('title').value = '';
-    document.getElementById('desc').value = '';
-  }
+    function showEvents() {
+      if (events.length === 0) {
+        eventList.innerHTML = "<p style='text-align:center;color:#777;'>Belum ada info terbaru.</p>";
+        return;
+      }
 
-  function deleteEvent(index) {
-    if (confirm('Yakin mau hapus event ini?')) {
-      events.splice(index, 1);
+      eventList.innerHTML = events.map((e, i) => `
+        <div class='event'>
+          <h4>${e.title}</h4>
+          <p>${e.desc}</p>
+          ${isAdmin ? `<button class="btn" style="background:#e53935;" onclick="deleteEvent(${i})">Hapus</button>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function addEvent() {
+      const title = document.getElementById('title').value.trim();
+      const desc = document.getElementById('desc').value.trim();
+      if (!title || !desc) return alert('Isi semua kolom dulu!');
+      events.unshift({ title, desc, time: new Date().toLocaleString() });
       localStorage.setItem('events', JSON.stringify(events));
       showEvents();
+      document.getElementById('title').value = '';
+      document.getElementById('desc').value = '';
     }
-  }
 
-  if (isAdmin) addSection.style.display = 'block';
-  showEvents();
-</script>
+    function deleteEvent(index) {
+      if (confirm('Yakin mau hapus event ini?')) {
+        events.splice(index, 1);
+        localStorage.setItem('events', JSON.stringify(events));
+        showEvents();
+      }
+    }
+
+    function deleteAll() {
+      if (confirm('Hapus semua event?')) {
+        events = [];
+        localStorage.removeItem('events');
+        showEvents();
+      }
+    }
+
+    if (isAdmin) {
+      addSection.style.display = 'block';
+      deleteAllBtn.style.display = 'block';
+    }
+
+    showEvents();
+  </script>
 </body>
 </html>
