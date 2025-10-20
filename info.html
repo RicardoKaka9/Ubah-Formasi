@@ -3,175 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Manager</title>
+  <title>📰 Info Event</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 20px;
+    body { font-family: Poppins, sans-serif; background:#f3f3f3; padding:20px; }
+    h2 { text-align:center; margin-bottom:20px; }
+    .card {
+      background:white;
+      border-radius:12px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+      padding:15px;
+      margin-bottom:15px;
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      animation: fadeIn 0.6s ease;
     }
-
-    h1 {
-      text-align: center;
-    }
-
-    .event-form {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-
-    input, textarea, button {
-      width: 100%;
-      margin: 5px 0;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-
-    .event-list {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .event {
-      border-bottom: 1px solid #eee;
-      padding: 10px 0;
-    }
-
-    .admin-controls {
-      text-align: center;
-      margin-top: 15px;
-    }
-
-    .admin-controls button {
-      background-color: #ff4444;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .admin-controls button:hover {
-      background-color: #e22;
-    }
+    .icon { font-size:25px; }
+    .content { flex:1; }
+    .date { color:#777; font-size:13px; margin-bottom:3px; }
+    .text { font-size:16px; }
+    @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
   </style>
 </head>
 <body>
-
-  <h1>📅 Manajemen Event</h1>
-
-  <div class="event-form">
-    <h3>Tambah Event</h3>
-    <input type="text" id="judulEvent" placeholder="Judul event">
-    <textarea id="deskripsiEvent" placeholder="Deskripsi event"></textarea>
-    <button onclick="tambahEvent()">Tambah</button>
-  </div>
-
-  <div class="event-list" id="eventList">
-    <h3>Daftar Event</h3>
-    <div id="events"></div>
-  </div>
-
-  <div class="admin-controls">
-    <button id="deleteAllButton" onclick="hapusSemuaEvent()">🗑️ Hapus Semua Event</button>
-  </div>
+  <h2>📰 Info Terkini</h2>
+  <div id="eventContainer"></div>
 
   <script>
-    // === KONFIGURASI ADMIN ===
-    const isAdmin = true; // ubah ke false untuk user biasa
+    const container = document.getElementById("eventContainer");
+    const events = JSON.parse(localStorage.getItem("events") || "[]");
 
-    // === INISIALISASI ===
-    const eventsContainer = document.getElementById("events");
-    const deleteAllButton = document.getElementById("deleteAllButton");
-
-    // Sembunyikan tombol jika bukan admin
-    if (!isAdmin) {
-      deleteAllButton.style.display = "none";
-    }
-
-    // === FUNGSI TAMBAH EVENT ===
-    function tambahEvent() {
-      const judul = document.getElementById("judulEvent").value.trim();
-      const deskripsi = document.getElementById("deskripsiEvent").value.trim();
-
-      if (!judul) {
-        alert("Judul event tidak boleh kosong!");
-        return;
-      }
-
-      const eventBaru = {
-        id: Date.now(),
-        judul,
-        deskripsi,
-      };
-
-      const semuaEvent = JSON.parse(localStorage.getItem("events")) || [];
-      semuaEvent.push(eventBaru);
-      localStorage.setItem("events", JSON.stringify(semuaEvent));
-
-      tampilkanEvent();
-      document.getElementById("judulEvent").value = "";
-      document.getElementById("deskripsiEvent").value = "";
-    }
-
-    // === FUNGSI TAMPILKAN EVENT ===
-    function tampilkanEvent() {
-      const semuaEvent = JSON.parse(localStorage.getItem("events")) || [];
-      eventsContainer.innerHTML = "";
-
-      if (semuaEvent.length === 0) {
-        eventsContainer.innerHTML = "<p>Belum ada event.</p>";
-        return;
-      }
-
-      semuaEvent.forEach(e => {
+    if (events.length === 0) {
+      container.innerHTML = "<p style='text-align:center;'>Belum ada info terkini.</p>";
+    } else {
+      events.reverse().forEach(ev => {
         const div = document.createElement("div");
-        div.className = "event";
+        div.className = "card";
         div.innerHTML = `
-          <strong>${e.judul}</strong><br>
-          <small>${e.deskripsi || "(tanpa deskripsi)"}</small><br>
-          ${isAdmin ? `<button onclick="hapusEvent(${e.id})">Hapus</button>` : ""}
+          <div class="icon">${ev.icon}</div>
+          <div class="content">
+            <div class="date">${ev.date}</div>
+            <div class="text">${ev.text}</div>
+          </div>
         `;
-        eventsContainer.appendChild(div);
+        container.appendChild(div);
       });
     }
-
-    // === FUNGSI HAPUS EVENT SATUAN ===
-    function hapusEvent(id) {
-      if (!isAdmin) {
-        alert("Anda tidak memiliki izin untuk menghapus event ini!");
-        return;
-      }
-      const semuaEvent = JSON.parse(localStorage.getItem("events")) || [];
-      const baru = semuaEvent.filter(e => e.id !== id);
-      localStorage.setItem("events", JSON.stringify(baru));
-      tampilkanEvent();
-    }
-
-    // === FUNGSI HAPUS SEMUA EVENT ===
-    function hapusSemuaEvent() {
-      if (!isAdmin) {
-        alert("Anda tidak memiliki izin untuk melakukan ini!");
-        return;
-      }
-      if (confirm("⚠️ Yakin ingin menghapus semua event?")) {
-        localStorage.removeItem("events");
-        alert("Semua event berhasil dihapus!");
-        tampilkanEvent();
-      }
-    }
-
-    // Jalankan saat halaman dibuka
-    tampilkanEvent();
   </script>
-
 </body>
 </html>
