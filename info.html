@@ -21,35 +21,44 @@
     <button onclick="addEvent()">Tambah</button>
   </div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const isAdmin = params.get('admin') === 'true';
-    const eventList = document.getElementById('event-list');
-    const addSection = document.getElementById('add-section');
-    let events = JSON.parse(localStorage.getItem('events') || '[]');
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const isAdmin = params.get('admin') === 'true';
+  const eventList = document.getElementById('event-list');
+  const addSection = document.getElementById('add-section');
+  let events = JSON.parse(localStorage.getItem('events') || '[]');
 
-    function showEvents() {
-      eventList.innerHTML = events.map(e => `
-        <div class='event'>
-          <h4>${e.title}</h4>
-          <p>${e.desc}</p>
-        </div>
-      `).join('');
-    }
+  function showEvents() {
+    eventList.innerHTML = events.map((e, i) => `
+      <div class='event'>
+        <h4>${e.title}</h4>
+        <p>${e.desc}</p>
+        ${isAdmin ? `<button onclick="deleteEvent(${i})" style="background:#e53935;">Hapus</button>` : ''}
+      </div>
+    `).join('');
+  }
 
-    function addEvent() {
-      const title = document.getElementById('title').value;
-      const desc = document.getElementById('desc').value;
-      if (!title || !desc) return alert('Isi semua!');
-      events.unshift({ title, desc });
+  function addEvent() {
+    const title = document.getElementById('title').value;
+    const desc = document.getElementById('desc').value;
+    if (!title || !desc) return alert('Isi semua!');
+    events.unshift({ title, desc });
+    localStorage.setItem('events', JSON.stringify(events));
+    showEvents();
+    document.getElementById('title').value = '';
+    document.getElementById('desc').value = '';
+  }
+
+  function deleteEvent(index) {
+    if (confirm('Yakin mau hapus event ini?')) {
+      events.splice(index, 1);
       localStorage.setItem('events', JSON.stringify(events));
       showEvents();
-      document.getElementById('title').value = '';
-      document.getElementById('desc').value = '';
     }
+  }
 
-    if (isAdmin) addSection.style.display = 'block';
-    showEvents();
-  </script>
+  if (isAdmin) addSection.style.display = 'block';
+  showEvents();
+</script>
 </body>
 </html>
