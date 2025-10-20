@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Info</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background: #f4f4f4; }
+    h1 { text-align: center; }
+    .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+    button { padding: 8px 12px; border: none; background: #2196F3; color: white; border-radius: 6px; cursor: pointer; }
+    button.delete { background: #f44336; }
+  </style>
+</head>
+<body>
+  <h1>Panel Admin Info</h1>
+
+  <div>
+    <input id="judul" placeholder="Judul Event" />
+    <input id="deskripsi" placeholder="Deskripsi Event" />
+    <button onclick="tambahEvent()">Tambah Event</button>
+    <button class="delete" onclick="hapusSemua()">Hapus Semua Event</button>
+  </div>
+
+  <div id="list"></div>
+
+  <script>
+    function ambilEvent() {
+      const data = JSON.parse(localStorage.getItem('events') || '[]');
+      const list = document.getElementById('list');
+      list.innerHTML = '';
+      data.forEach((ev, i) => {
+        list.innerHTML += `
+          <div class="card">
+            <h3>${ev.judul}</h3>
+            <p>${ev.deskripsi}</p>
+            <button class="delete" onclick="hapus(${i})">Hapus</button>
+          </div>`;
+      });
+    }
+
+    function tambahEvent() {
+      const judul = document.getElementById('judul').value;
+      const deskripsi = document.getElementById('deskripsi').value;
+      if (!judul || !deskripsi) return alert('Isi semua kolom!');
+      const data = JSON.parse(localStorage.getItem('events') || '[]');
+      data.push({ judul, deskripsi });
+      localStorage.setItem('events', JSON.stringify(data));
+      ambilEvent();
+    }
+
+    function hapus(i) {
+      const data = JSON.parse(localStorage.getItem('events') || '[]');
+      data.splice(i, 1);
+      localStorage.setItem('events', JSON.stringify(data));
+      ambilEvent();
+    }
+
+    function hapusSemua() {
+      if (confirm('Yakin hapus semua event?')) {
+        localStorage.removeItem('events');
+        ambilEvent();
+      }
+    }
+
+    ambilEvent();
+  </script>
+</body>
+</html>
