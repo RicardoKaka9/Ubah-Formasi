@@ -1,74 +1,80 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📰 Info Event</title>
-  <style>
-    body { 
-      font-family: Poppins, sans-serif; 
-      background:#f3f3f3; 
-      padding:20px; 
-    }
-    h2 { 
-      text-align:center; 
-      margin-bottom:20px; 
-    }
-    .card {
-      background:white;
-      border-radius:12px;
-      box-shadow:0 4px 10px rgba(0,0,0,0.1);
-      padding:15px;
-      margin-bottom:15px;
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      animation: fadeIn 0.6s ease;
-    }
-    .icon { font-size:25px; }
-    .content { flex:1; }
-    .date { color:#777; font-size:13px; margin-bottom:3px; }
-    .text { font-size:16px; }
-    @keyframes fadeIn { 
-      from {opacity:0; transform:translateY(10px);} 
-      to {opacity:1; transform:translateY(0);} 
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Info Publik</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  h1 { text-align: center; }
+  .event-card { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+  select, button { padding: 5px 10px; margin: 5px 0; }
+</style>
 </head>
 <body>
-  <h2>📰 Info Terkini</h2>
-  <div id="eventContainer"></div>
 
-  <script>
-const clubKey = "events"; // atau events_chelsea, tergantung klub
-let events = [];
+<h1>Info Publik</h1>
 
-try {
-  const saved = localStorage.getItem(clubKey);
-  events = saved ? JSON.parse(saved) : [];
-} catch (e) {
-  console.error("Data rusak atau kosong:", e);
-  events = [];
-}
+<div>
+  <label for="club-select">Pilih Club Privat:</label>
+  <select id="club-select">
+    <option value="chelsea">Chelsea</option>
+<option value="barca">Barcelona</option>
+<option value="inter">Inter</option>
+<option value="milan">Milan</option>
+<option value="leverkusen">Leverkusen</option>
+  </select>
+  <button id="enter-club">Masuk Club</button>
+</div>
 
-const list = document.getElementById('eventList');
-list.innerHTML = '';
+<hr>
 
-if (events.length === 0) {
-  list.innerHTML = "<p>Tidak ada info terbaru.</p>";
-} else {
-  events.forEach(event => {
-    if (!event.title || !event.description) return; // cegah undefined
-    const div = document.createElement('div');
-    div.className = 'event-card';
-    div.innerHTML = `
-      <h3>${event.title}</h3>
-      <small>${event.date || '-'}</small>
-      <p>${event.description}</p>
-    `;
-    list.appendChild(div);
-  });
-}
-  </script>
+<div id="events">
+  <!-- Event umum akan muncul di sini -->
+</div>
+
+<script>
+// Contoh event umum
+const generalEvents = [
+  "Arhefan cetak hat-trick vs Bayern Munich",
+  "Daffa mendapatkan goal ke-100 musim ini",
+  "Arkha jadi Player of the Week"
+];
+
+// Tampilkan event umum
+const eventsDiv = document.getElementById('events');
+generalEvents.forEach(ev => {
+  const div = document.createElement('div');
+  div.className = 'event-card';
+  div.textContent = ev;
+  eventsDiv.appendChild(div);
+});
+
+// Tombol masuk club
+document.getElementById('enter-club').addEventListener('click', () => {
+  let club = document.getElementById('club-select').value.toLowerCase(); // semua lowercase
+  if (!club) return alert('Pilih club dulu!');
+  
+  // Prompt password
+  const pw = prompt(`Masukkan password untuk ${club}:`);
+  
+  // Password tiap club
+  const passwords = {
+    chelsea: 'chelsea123',
+    barca: 'barca123',
+    inter: 'inter123',
+    milan: 'milan123',
+    leverkusen: 'leverkusen123'
+  };
+  
+  if (pw === passwords[club]) {
+    // redirect sesuai nama file
+    window.location.href = `${club}.html`;
+  } else {
+    alert('Password salah!');
+  }
+});
+</script>
+
 </body>
 </html>
