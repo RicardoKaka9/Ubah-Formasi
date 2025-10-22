@@ -1,112 +1,88 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Info Admin - Event Management</title>
+<title>Info Admin</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f3f4f6;
-    padding: 20px;
-  }
-  h1 {
-    text-align: center;
-  }
-  #eventList {
-    margin-top: 20px;
-  }
-  .event-card {
-    background: white;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    position: relative;
-  }
-  .delete-btn {
-    position: absolute;
-    right: 15px;
-    top: 15px;
-    background: red;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    padding: 5px 8px;
-  }
-  .delete-btn:hover {
-    background: darkred;
-  }
-  button {
-    margin: 5px;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  #addEventBtn {
-    background: #2563eb;
-    color: white;
-  }
-  #clearAllBtn {
-    background: #ef4444;
-    color: white;
-  }
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  h1 { text-align: center; }
+  .event-card { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+  button { margin-left: 5px; }
+  input[type=text] { padding:5px; width: 60%; }
 </style>
 </head>
 <body>
 
-<h1>📰 Info Admin Panel</h1>
-<button id="addEventBtn">Tambah Event</button>
-<button id="clearAllBtn">Hapus Semua Event</button>
+<h1>Info Admin</h1>
 
-<div id="eventList"></div>
+<div>
+  <input type="text" id="new-event" placeholder="Tulis event baru...">
+  <button id="add-event">Tambah Event</button>
+</div>
+
+<hr>
+
+<div id="admin-events">
+  <!-- Event akan muncul di sini -->
+</div>
 
 <script>
-// Ambil data event dari localStorage
-let events = JSON.parse(localStorage.getItem('events')) || [];
+// Ambil event dari localStorage atau default
+let events = JSON.parse(localStorage.getItem('adminEvents')) || [];
 
+// Fungsi render event
 function renderEvents() {
-  const list = document.getElementById('eventList');
-  list.innerHTML = '';
-  events.forEach((event, index) => {
+  const eventsDiv = document.getElementById('admin-events');
+  eventsDiv.innerHTML = ''; // kosongkan dulu
+  events.forEach((ev, index) => {
     const div = document.createElement('div');
     div.className = 'event-card';
-    div.innerHTML = `
-      <strong>${event.title}</strong><br>
-      <small>${event.date}</small><br>
-      <p>${event.description}</p>
-      <button class="delete-btn" onclick="deleteEvent(${index})">❌</button>
-    `;
-    list.appendChild(div);
+    div.textContent = ev;
+
+    // Tombol Hapus
+    const delBtn = document.createElement('button');
+    delBtn.textContent = 'Hapus';
+    delBtn.addEventListener('click', () => {
+      events.splice(index,1);
+      localStorage.setItem('adminEvents', JSON.stringify(events));
+      renderEvents();
+    });
+
+    // Tombol Edit
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', () => {
+      const newText = prompt('Edit event:', ev);
+      if(newText) {
+        events[index] = newText;
+        localStorage.setItem('adminEvents', JSON.stringify(events));
+        renderEvents();
+      }
+    });
+
+    div.appendChild(editBtn);
+    div.appendChild(delBtn);
+    eventsDiv.appendChild(div);
   });
 }
 
 // Tambah event baru
-document.getElementById('addEventBtn').onclick = function() {
-  const title = prompt('Judul event:');
-  const description = prompt('Deskripsi:');
-  const date = new Date().toLocaleString('id-ID');
-  if (title && description) {
-    events.push({ title, description, date });
-    localStorage.setItem('events', JSON.stringify(events));
-    renderEvents();
-  }
-};
+document.getElementById('add-event').addEventListener('click', () => {
+  const text = document.getElementById('new-event').value.trim();
+  if(!text) return alert('Tulis dulu eventnya!');
+  events.push(text);
+  localStorage.setItem('adminEvents', JSON.stringify(events));
+  document.getElementById('new-event').value = '';
+  renderEvents();
+});
 
-// Hapus semua event
-document.getElementById('clearAllBtn').onclick = function() {
-  if (confirm('Yakin mau hapus semua event?')) {
-    events = [];
-    localStorage.setItem('events', JSON.stringify(events));
-    renderEvents();
-  }
-};
+// Render saat pertama kali load
+renderEvents();
+</script>
 
-// Hapus event tertentu
-function deleteEvent(index) {
-  if (confirm('Hapus event ini?')) {
+</body>
+</html>  if (confirm('Hapus event ini?')) {
     events.splice(index, 1);
     localStorage.setItem('events', JSON.stringify(events));
     renderEvents();
