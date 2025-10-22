@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Milan</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #aa0000; color: white; }
+    textarea, input { width: 100%; margin-top: 10px; padding: 8px; border-radius: 5px; border: none; }
+    button { margin-top: 10px; padding: 10px 15px; cursor: pointer; border: none; border-radius: 6px; }
+    button:hover { opacity: 0.9; }
+    .info-list { margin-top: 20px; }
+    .card { background: #cc0000; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h2>⚙️ Admin - Info A.C. Milan</h2>
+
+  <h3>📰 Tambah Info Biasa</h3>
+  <textarea id="newInfo" placeholder="Tulis info baru di sini..."></textarea><br>
+  <button onclick="addInfo()">Tambah Info</button>
+
+  <h3>💰 Tambah Tawaran Transfer</h3>
+  <input type="text" id="playerName" placeholder="Nama pemain">
+  <input type="text" id="offerClub" placeholder="Klub yang menawar">
+  <input type="text" id="offerPrice" placeholder="Contoh: €53jt">
+  <button onclick="addOffer()">Tambah Tawaran</button>
+
+  <button style="background:#e63946;color:white;" onclick="clearAll()">Hapus Semua Info</button>
+
+  <div class="info-list" id="infoList"></div>
+
+  <script>
+    const KEY = "milanInfo";
+
+    function loadInfo() {
+      const info = JSON.parse(localStorage.getItem(KEY)) || [];
+      const list = document.getElementById("infoList");
+      list.innerHTML = "";
+      info.forEach((item, i) => {
+        list.innerHTML += `
+          <div class='card'>
+            ${item.text}
+            <button onclick="deleteInfo(${i})">Hapus</button>
+          </div>
+        `;
+      });
+    }
+
+    function addInfo() {
+      const text = document.getElementById("newInfo").value.trim();
+      if (!text) return alert("Tulis sesuatu dulu!");
+      const info = JSON.parse(localStorage.getItem(KEY)) || [];
+      info.push({ type: "info", text });
+      localStorage.setItem(KEY, JSON.stringify(info));
+      document.getElementById("newInfo").value = "";
+      loadInfo();
+    }
+
+    function addOffer() {
+      const name = document.getElementById("playerName").value.trim();
+      const club = document.getElementById("offerClub").value.trim();
+      const price = document.getElementById("offerPrice").value.trim();
+      if (!name || !club || !price) return alert("Isi semua kolom tawaran!");
+
+      const info = JSON.parse(localStorage.getItem(KEY)) || [];
+      const text = `💰 ${name} ditawar oleh ${club} ${price}`;
+      info.push({ type: "offer", text });
+      localStorage.setItem(KEY, JSON.stringify(info));
+
+      document.getElementById("playerName").value = "";
+      document.getElementById("offerClub").value = "";
+      document.getElementById("offerPrice").value = "";
+      loadInfo();
+    }
+
+    function deleteInfo(index) {
+      const info = JSON.parse(localStorage.getItem(KEY)) || [];
+      info.splice(index, 1);
+      localStorage.setItem(KEY, JSON.stringify(info));
+      loadInfo();
+    }
+
+    function clearAll() {
+      if (confirm("Yakin hapus semua info?")) {
+        localStorage.removeItem(KEY);
+        loadInfo();
+      }
+    }
+
+    loadInfo();
+  </script>
+</body>
+</html>

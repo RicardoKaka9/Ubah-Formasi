@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Info Barcelona</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f7f7f7; }
+    .card { background: white; border-left: 5px solid #004aad; padding: 10px; margin-bottom: 8px; border-radius: 6px; }
+    button { margin: 3px; padding: 5px 10px; cursor: pointer; border-radius: 5px; border: none; }
+  </style>
+</head>
+<body>
+  <h2>🔵🔴 Info Klub Barcelona</h2>
+  <div id="infoList"></div>
+
+  <script>
+    const KEY = "barcaInfo";
+
+    function loadInfo() {
+      const info = JSON.parse(localStorage.getItem(KEY)) || [];
+      const list = document.getElementById("infoList");
+      list.innerHTML = "";
+      info.forEach((item, i) => {
+        if (item.type === "offer") {
+          const voted = localStorage.getItem("barcaVote" + i);
+          list.innerHTML += `
+            <div class='card'>
+              ${item.text}
+              ${!voted ? `
+                <div>
+                  <button onclick="vote(${i}, 'Tolak')">Tolak</button>
+                  <button onclick="vote(${i}, 'Lebih')">Lebih</button>
+                  <button onclick="vote(${i}, 'Terima')">Terima</button>
+                </div>
+              ` : `<p><b>Respon Anda:</b> ${voted}</p>`}
+            </div>
+          `;
+        } else {
+          list.innerHTML += `<div class='card'>${item.text}</div>`;
+        }
+      });
+    }
+
+    function vote(index, choice) {
+      localStorage.setItem("barcaVote" + index, choice);
+      loadInfo();
+    }
+
+    loadInfo();
+  </script>
+</body>
+</html>
