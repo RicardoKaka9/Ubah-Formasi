@@ -80,13 +80,13 @@ document.getElementById("infoButton").addEventListener("click", function() {
 // =================== BAGIAN 2: DATABASE PEMAIN ===================
 const clubs = {
   "Leverkusen":[
-    {name:"Emiliano Martinez",pos:["GK"]},{name:"Lucas Chevalier",pos:["GK"]},{name:"Niklas Lomb",pos:["GK"]},{name:"Matej Kovar",pos:["GK"]},{name:"Lukas Hradecky",pos:["GK"]},
-    {name:"Lucio",pos:["CB"]},{name:"Nordi Mukiele",pos:["RB","CB"]},{name:"Murillo",pos:["CB"]},{name:"Soumaila Fofana",pos:["CB","DM"]},{name:"Jeanuel Belocian",pos:["CB","LB"]},{name:"Dean Huijsen",pos:["CB"]},{name:"Antonio Rudiger",pos:["CB"]},
+    {name:"Lucas Chevalier",pos:["GK"]},{name:"Manuel Neuer",pos:["GK"]},{name:"Niklas Lomb",pos:["GK"]},{name:"Matej Kovar",pos:["GK"]},{name:"Lukas Hradecky",pos:["GK"]},
+    {name:"Lucio",pos:["CB"]},{name:"Nordi Mukiele",pos:["RB","CB"]},{name:"Soumaila Fofana",pos:["CB","DM"]},{name:"Jeanuel Belocian",pos:["CB","LB"]},{name:"Dean Huijsen",pos:["CB"]},{name:"Levi Colwill",pos:["CB"]},
     {name:"Arthur",pos:["RB","LB"]},{name:"Olivier Raterink",pos:["CM"]},
     {name:"Granit Xhaka",pos:["CM","DM"]},{name:"Alejandro Grimaldo",pos:["LB","LM","LW"]},{name:"Jonas Hofmann",pos:["RM","AM"]},{name:"Robert Andrich",pos:["DM","CM"]},{name:"Aleksandr Stepanov",pos:["CM"]},{name:"Amine Adli",pos:["LW","RW","AM"]},
-    {name:"Martin Terrier",pos:["LW","ST"]},{name:"Nathan Tella",pos:["RW","LW"]},{name:"Ole Romeny",pos:["ST","RW","RM","AM"]},{name:"Frank Onyeka",pos:["DM","CM"]},{name:"Amir Aourir",pos:["CM"]},
-    {name:"Nico Paz",pos:["AM","CM","LM"]},{name:"Rodrigo Mora",pos:["CM","AM"]},{name:"Luka Modric",pos:["CM","AM"]},
-    {name:"Patrik Schick",pos:["ST"]},{name:"Erling Haaland",pos:["ST"]},{name:"Julian Alvarez",pos:["ST","AM","RM","RW"]}
+    {name:"Martin Terrier",pos:["LW","ST"]},{name:"Federico Chiesa",pos:["LW","LM","AM","RW"]},{name:"Nathan Tella",pos:["RW","LW"]},{name:"Ole Romeny",pos:["ST","RW","RM","AM"]},{name:"Frank Onyeka",pos:["DM","CM"]},{name:"Amir Aourir",pos:["CM"]},
+    {name:"Nico Paz",pos:["AM","CM","LM"]},{name:"Rodrigo Mora",pos:["CM","AM"]},{name:"Patrik Schick",pos:["ST"]},{name:"Erling Haaland",pos:["ST"]},
+    {name:"Julian Alvarez",pos:["ST","AM","RM","RW"]}
   ],
   "Chelsea":[
     {name:"Giorgi Mamardashvili",pos:["GK"]},{name:"Filip Jorgensen",pos:["GK"]},{name:"Marcus Bettinelli",pos:["GK"]},
@@ -108,21 +108,22 @@ const clubs = {
     {name:"M. Taremi", pos:["ST"]},{name:"Víctor Gyokeres", pos:["ST"]},{name:"Alexander Isak", pos:["ST"]}
   ],
   "AC Milan":[
-    {name:"Gianluigi Donnarumma",pos:["GK"]},{name:"Lapo Nava",pos:["GK"]},{name:"Lorenzo Torriani",pos:["GK"]},
-    {name:"Levi Colwill",pos:["CB","LB"]},{name:"Davide Calabria",pos:["RB"]},{name:"Fikayo Tomori",pos:["CB"]},{name:"Josh Acheampong",pos:["CB","RB"]},{name:"Federico Dimarco",pos:["LB","LM"]},{name:"Alejandro Balde",pos:["LB","LM","LW"]},{name:"Pau Cubarsi",pos:["CB"]},{name:"Malick Thiaw",pos:["CB"]},{name:"Jeremie Frimpong",pos:["RB","RM","RW"]},{name:"Matteo Gabbia",pos:["CB"]},
+    {name:"Flip Jorgensen",pos:["GK"]},{name:"Lapo Nava",pos:["GK"]},{name:"Lorenzo Torriani",pos:["GK"]},
+    {name:"Davide Calabria",pos:["RB"]},{name:"Fikayo Tomori",pos:["CB"]},{name:"Josh Acheampong",pos:["CB","RB"]},{name:"Federico Dimarco",pos:["LB","LM"]},{name:"Archie Gray",pos:["CB","RB","LB","RM","DM"]},{name:"Alejandro Balde",pos:["LB","LM","LW"]},{name:"Pau Cubarsi",pos:["CB"]},{name:"Malick Thiaw",pos:["CB"]},{name:"Jeremie Frimpong",pos:["RB","RM","RW"]},{name:"Matteo Gabbia",pos:["CB"]},
     {name:"Emerson Royal",pos:["RB"]},{name:"Fode Ballo-Toure",pos:["LB"]},{name:"Alex Jimenez",pos:["RB","LB"]},{name:"Davide Bartesaghi",pos:["LB"]},
-    {name:"Tijjani Reijnders",pos:["CM","DM","AM"]},{name:"Pablo Gavi",pos:["CM"]},{name:"Joao Neves",pos:["DM","CM"]},{name:"Ricardo Kaka",pos:["AM"]},{name:"Florian Wirtz",pos:["AM","CM","LW"]},{name:"Youssouf Fofana",pos:["DM"]},{name:"Ismael Bennacer",pos:["CM","DM"]},{name:"Yunus Musah",pos:["CM"]},{name:"Francesco Terracciano",pos:["RB"]},{name:"Kevin Zeroli",pos:["CM"]},{name:"Mattia Liberali",pos:["AM"]},
-    {name:"Pedro Neto",pos:["RW","AM","RM","LM","ST","LW"]},{name:"Marc Guiu",pos:["ST"]},{name:"Christian Pulisic",pos:["RW","RM","LM","ST","AM","LW"]},{name:"Samuel Chukwueze",pos:["RW"]},{name:"Alvaro Morata",pos:["ST"]},{name:"Desire Doue",pos:["AM","LW","CM","LM","RW"]},{name:"Joshua Zirkzee",pos:["ST"]},{name:"Luka Jovic",pos:["ST"]},{name:"Noah Okafor",pos:["LW","ST"]},{name:"Cheick Traore",pos:["LB"]}
+    {name:"Tijjani Reijnders",pos:["CM","DM","AM"]},{name:"Willian Estevao",pos:["RW","RM","AM","LW","LM"]},{name:"Pablo Gavi",pos:["CM"]},{name:"Franco Mastantuono",pos:["CM","AM"]},{name:"Jamal Musiala",pos:["CM","AM","LM"]},
+    {name:"Fermin Lopez",pos:["AM","CM","LM"]},{name:"Ricardo Kaka",pos:["AM"]},{name:"Youssouf Fofana",pos:["DM"]},{name:"Marc Bernal",pos:["DM","CM"]},{name:"Ferran Torres",pos:["LW","ST"]},{name:"Ismael Bennacer",pos:["CM","DM"]},name:"Kendry Paez",pos:["AM","CM","LW","LM","RW","RM"]},{name:"Lennart Karl",pos:["AM","CM","LW","RW","RM"]},{name:"Yunus Musah",pos:["CM"]},{name:"Francesco Terracciano",pos:["RB"]},{name:"Kevin Zeroli",pos:["CM"]},{name:"Mattia Liberali",pos:["AM"]},
+    {name:"Lamine Yamal",pos:["RW","AM","RM","LM","LW"]},{name:"Eli Junior Kroupi",pos:["ST"]},{name:"Samuel Chukwueze",pos:["RW"]},{name:"Alvaro Morata",pos:["ST"]},{name:"Desire Doue",pos:["AM","LW","CM","LM","RW"]},{name:"Joshua Zirkzee",pos:["ST"]},{name:"Luka Jovic",pos:["ST"]},{name:"Noah Okafor",pos:["LW","ST"]},{name:"Cheick Traore",pos:["LB"]}
   ],
   "Barcelona":[
-    {name:"Diogo Costa",pos:["GK"]},{name:"Inaki Pena",pos:["GK"]},{name:"Astralaga",pos:["GK"]},
-    {name:"Sergi Dominguez",pos:["CB"]},{name:"Eric Garcia",pos:["CB","DM"]},{name:"Andreas Christensen",pos:["CB","DM"]},{name:"Inigo Martinez",pos:["CB"]},{name:"Jules Kounde",pos:["CB","RB"]},{name:"Ronald Araujo",pos:["CB"]},{name:"Theo Hernandez",pos:["LB","LM","LW"]},
-    {name:"Dewsbury-Hall",pos:["CM","AM"]},{name:"Marc Bernal",pos:["DM"]},{name:"Pedri",pos:["CM","AM"]},{name:"Fermin Lopez",pos:["AM","CM","LM"]},{name:"Dani Olmo",pos:["AM","LW"]},{name:"Marc Casado",pos:["DM","CM"]},
-    {name:"Johan Cruyff",pos:["ST","AM"]},{name:"Ansu Fati",pos:["LW","RW"]},{name:"Pau Victor",pos:["ST"]},{name:"Raphinha",pos:["RW","LW","LM","RM","AM"]},{name:"Robert Lewandowski",pos:["ST"]},{name:"Nico Williams",pos:["LW","RW"]},
-    {name:"Ousmane Dembele",pos:["RW","LW","ST","RM"]},{name:"Victor Roque",pos:["ST"]},{name:"Lamine Yamal",pos:["RW","RM"]},{name:"Lautaro Martinez",pos:["ST"]},{name:"Ferran Torres",pos:["LW","ST"]}
+    {name:"Gianluigi Donnarumma",pos:["GK"]},{name:"Yann Sommer",pos:["GK"]},{name:"Inaki Pena",pos:["GK"]},{name:"Astralaga",pos:["GK"]},
+    {name:"Sergi Dominguez",pos:["CB"]},{name:"Eric Garcia",pos:["CB","DM"]},{name:"Andreas Christensen",pos:["CB","DM"]},{name:"Inigo Martinez",pos:["CB"]},{name:"Jules Kounde",pos:["CB","RB"]},{name:"Ronald Araujo",pos:["CB"]},{name:"Andrew Robetson",pos:["LB","LM"]},
+    {name:"Dewsbury-Hall",pos:["CM","AM"]},{name:"Pedri",pos:["CM","AM"]},{name:"Dani Olmo",pos:["AM","LW"]},{name:"Marc Casado",pos:["DM","CM"]},
+    {name:"Johan Cruyff",pos:["ST","AM"]},{name:"Ansu Fati",pos:["LW","RW"]},{name:"Pau Victor",pos:["ST"]},{name:"Florian Wirtz",pos:["AM","CM","LW"]},{name:"Robert Lewandowski",pos:["ST"]},{name:"Nico Williams",pos:["LW","LM","RW"]},
+    {name:"Marc Guiu",pos:["ST"]},{name:"Victor Roque",pos:["ST"]},{name:"Pedro Neto",pos:["RW","RM","ST","LW"]}
   ]
 };
-
+      
 // =================== BAGIAN 1: POSISI FIELD ===================
 const field = document.getElementById('field');
 const clubSelect = document.getElementById('clubSelect');
