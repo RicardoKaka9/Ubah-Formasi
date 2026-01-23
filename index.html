@@ -1,448 +1,496 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Formasi(Sasono League)</title>
+<title>Squad Builder FINAL</title>
+
 <style>
-  body { font-family: Arial, sans-serif; background:#126412; color:white; text-align:center; margin:0; padding:0;}
-  h1 { margin-top:20px;}
-  .controls { margin:20px;}
-  .field {
-    position: relative; width:700px; height:900px; background:#228B22;
-    margin:20px auto; border:4px solid white; border-radius:10px;
-  }
-  .position {
-    position:absolute; width:100px; height:40px;
-    background: rgba(255,255,255,0.25); border:1px solid #fff;
-    border-radius:8px; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; font-weight:bold;
-    transition:0.3s; user-select:none;
-  }
-  .invalid { background: rgba(255,0,0,0.4) !important;}
-  .valid { background: rgba(0,255,0,0.4) !important;}
-  .subs { position:absolute; right:-180px; top:100px; width:160px; display:flex; flex-direction:column; gap:10px;}
-  select, button { margin:5px; padding:6px 10px; border-radius:5px; border:none; cursor:pointer;}
-  #playerSelect { display:none;}
+body{margin:0;font-family:Arial;background:#0b0b0b;color:#fff}
+header{background:#000;padding:10px;text-align:center}
+select{padding:6px;margin:4px}
+
+.container{display:flex}
+.field{
+  width:65%;height:700px;
+  background:linear-gradient(#1b5e20,#2e7d32);
+  margin:10px;border-radius:16px;position:relative
+}
+
+.slot-xi.active,
+.bench-slot.active,
+.item.active{
+  outline:3px solid #2196f3;
+}
+
+.slot-xi{
+  position:absolute;width:130px;height:70px;
+  background:rgba(0,0,0,.65);
+  border:2px dashed #aaa;border-radius:10px;
+  text-align:center;cursor:pointer;padding:4px
+}
+.slot-xi.good{border-color:#00e676}
+.slot-xi.bad{border-color:#ff5252}
+.slot-xi.active{outline:3px solid #2196f3}
+
+.name{font-size:12px;font-weight:bold}
+.pos{font-size:11px;opacity:.8}
+
+.stamina{height:6px;background:#333;border-radius:4px;overflow:hidden;margin-top:4px}
+.stamina div{height:100%;background:#00e676}
+
+.sidebar{width:35%;padding:10px}
+.list{border:1px solid #444;border-radius:8px;padding:6px;max-height:260px;overflow:auto}
+.item{padding:6px;border-bottom:1px solid #333;cursor:pointer}
+.item:hover{background:#333}
+
+.bench{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.bench-slot{
+  border:2px dashed #aaa;border-radius:8px;
+  padding:6px;text-align:center;cursor:pointer
+}
+.bench-slot.active{outline:3px solid #2196f3}
 </style>
 </head>
+
 <body>
 
-<h1>⚽Sasono League</h1>
+<header>
+<h2>Squad Builder</h2>
+<select id="clubSelect">
+  <option value="">--- Pilih Club ---</option>
+</select>
+<select id="formationSelect">
+  <option value="433">4-3-3</option>
+  <option value="4231">4-2-3-1</option>
+</select>
+</header>
 
-<div class="controls">
-  <label>Pilih Club:</label>
-  <select id="clubSelect">
-    <option value="">-- Pilih Club --</option>
-    <option value="Leverkusen">Leverkusen</option>
-    <option value="Chelsea">Chelsea</option>
-    <option value="Inter Milan">Inter Milan</option>
-    <option value="AC Milan">AC Milan</option>
-    <option value="Barcelona">Barcelona</option>
-  </select>
-
-  <label>Formasi:</label>
-  <select id="formationSelect">
-    <option value="4-3-3">4-3-3</option>
-    <option value="4-3-3A">4-3-3 Attack</option>
-    <option value="4-3-3D">4-3-3 Defense</option>
-    <option value="4-2-1-3">4-2-1-3</option>
-    <option value="4-2-1-3A">4-2-1-3 Attack</option>
-    <option value="4-1-2-3">4-1-2-3</option>
-    <option value="4-1-2-3D">4-1-2-3 Defense</option>
-    <option value="4-2-3-1">4-2-3-1</option>
-    <option value="3-5-2">3-5-2</option>
-    <option value="4-2-4">4-2-4</option>
-    <option value="3-4-2-1">3-4-2-1</option>
-    <option value="3-1-4-2">3-1-4-2</option>
-    <option value="3-6-1">3-6-1</option>
-    <option value="2-3-5">2-3-5</option>
-    <option value="3-4-3">3-4-3</option>
-  </select>
-
-  <button id="saveBtn">💾 Simpan Lineup</button>
-  <label>Pilih Kapten:</label>
-  <select id="captainSelect"></select>
+<div class="container">
+  <div class="field" id="field"></div>
+  <div class="sidebar">
+    <h3>Bench (9)</h3>
+    <div class="bench" id="bench"></div>
+<button onclick="sendToReserves()" style="
+  margin-top:10px;
+  width:100%;
+  padding:8px;
+  background:#1e88e5;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+">
+⬅ Kirim ke Reserves
+</button>
+    <h3>Reserves</h3>
+<div class="list" id="reserves"></div>
+  </div>
 </div>
 
-   <button id="infoButton">ℹ️ Info</button>
-
 <script>
-document.getElementById("infoButton").addEventListener("click", function() {
-    window.location.href = "info.html";
-});
-</script>
-
-
-<div class="field" id="field"></div>
-<select id="playerSelect"></select>
-
-<script>
-// =================== BAGIAN 2: DATABASE PEMAIN ===================
+// ================= DATA (TANPA ID) =================
 const clubs = {
-  "Leverkusen":[
-    {name:"Lucas Chevalier",pos:["GK"]},{name:"Manuel Neuer",pos:["GK"]},{name:"Niklas Lomb",pos:["GK"]},{name:"Matej Kovar",pos:["GK"]},{name:"Lukas Hradecky",pos:["GK"]},
-    {name:"Nordi Mukiele",pos:["RB","CB"]},{name:"Soumaila Fofana",pos:["CB","DM"]},{name:"Jeanuel Belocian",pos:["CB","LB"]},{name:"Dean Huijsen",pos:["CB"]},{name:"Levi Colwill",pos:["CB"]},
-    {name:"Arthur",pos:["RB","LB"]},{name:"Olivier Raterink",pos:["CM"]},
-    {name:"Granit Xhaka",pos:["CM","DM"]},{name:"Alejandro Grimaldo",pos:["LB","LM","LW"]},{name:"Jonas Hofmann",pos:["RM","AM"]},{name:"Robert Andrich",pos:["DM","CM"]},{name:"Aleksandr Stepanov",pos:["CM"]},{name:"Amine Adli",pos:["LW","RW","AM"]},
-    {name:"Martin Terrier",pos:["LW","ST"]},{name:"Federico Chiesa",pos:["LW","LM","AM","RW"]},{name:"Nathan Tella",pos:["RW","LW"]},{name:"Ole Romeny",pos:["ST","RW","RM","AM"]},{name:"Frank Onyeka",pos:["DM","CM"]},{name:"Amir Aourir",pos:["CM"]},
-    {name:"Nico Paz",pos:["AM","CM","LM"]},{name:"Rodrigo Mora",pos:["CM","AM"]},{name:"Michael Olise",pos:["LM","LW","RW","AM"]},{name:"Patrik Schick",pos:["ST"]},{name:"Erling Haaland",pos:["ST"]},
-    {name:"Julian Alvarez",pos:["ST","AM","RM","RW"]}
+  milan: {
+    name: "AC Milan",
+    players: [
+      {name:"Kepa Arrizabalaga",pos:["GK"],stamina:100},
+      {name:"Filip Jörgensen",pos:["GK"],stamina:100},
+      {name:"David De Gea",pos:["GK"],stamina:100},
+
+      {name:"Benjamin Pavard",pos:["CB","RB"],stamina:100},
+      {name:"Alejandro Balde",pos:["LB","LM"],stamina:100},
+      {name:"Jeremie Frimpong",pos:["RB","RM","RW"],stamina:100},
+      {name:"António Silva",pos:["CB"],stamina:100},
+      {name:"Malick Thiaw",pos:["CB"],stamina:100},
+      {name:"Davide Calabria",pos:["RB"],stamina:100},
+      {name:"Alessandro Bastoni",pos:["CB"],stamina:100},
+      {name:"Fikayo Tomori",pos:["CB"],stamina:100},
+      {name:"Jorrel Hato",pos:["CB","LB"],stamina:100},
+      {name:"Emerson Royal",pos:["RB"],stamina:100},
+      {name:"Matteo Gabbia",pos:["CB"],stamina:100},
+      {name:"Lewis Hall",pos:["LB","LM"],stamina:100},
+      {name:"Fodé Ballo-Touré",pos:["LB"],stamina:100},
+
+      {name:"Archie Gray",pos:["CM","DM","RB"],stamina:100},
+      {name:"Youssouf Fofana",pos:["DM","CM"],stamina:100},
+      {name:"Marc Bernal",pos:["DM","CM"],stamina:100},
+      {name:"Ismaël Bennacer",pos:["DM","CM"],stamina:100},
+      {name:"Jorginho Frello",pos:["DM","CM"],stamina:100},
+      {name:"Guille Fernández",pos:["CM","AM"],stamina:100},
+      {name:"Jonathan de Guzmán",pos:["CM","AM"],stamina:100},
+      {name:"Yunus Musah",pos:["CM","RM"],stamina:100},
+      {name:"Fermín López",pos:["CM","AM"],stamina:100},
+      {name:"Warren Zaïre-Emery",pos:["CM","DM"],stamina:100},
+      {name:"Gavi Páez",pos:["CM"],stamina:100},
+      {name:"Andrey Santos",pos:["DM","CM"],stamina:100},
+      {name:"Lewis Miley",pos:["DM","CM"],stamina:100},
+      {name:"Lucas Bergvall",pos:["CM","AM"],stamina:100},
+      {name:"Arda Güler",pos:["AM","RW"],stamina:100},
+      {name:"Rayan Cherki",pos:["AM","RW"],stamina:100},
+      {name:"Max Dowman",pos:["AM"],stamina:100},
+      {name:"Reggie Walsh",pos:["CM"],stamina:100},
+      {name:"Rodrigo Mora",pos:["AM"],stamina:100},
+      {name:"Franco Mastantuono",pos:["AM","RW"],stamina:100},
+      {name:"Jamal Musiala",pos:["AM","LW"],stamina:100},
+      {name:"Kendry Páez",pos:["AM"],stamina:100},
+      {name:"Facundo Buonanotte",pos:["AM","RW"],stamina:100},
+      {name:"Adrian Przyborek",pos:["AM"],stamina:100},
+
+      {name:"Filippo Terracciano",pos:["RB","LB"],stamina:100},
+      {name:"Alejandro Garnacho",pos:["LW","RW"],stamina:100},
+      {name:"Samuel Chukwueze",pos:["RW"],stamina:100},
+      {name:"Rodrigo Belinho",pos:["LW"],stamina:100},
+      {name:"Estêvão Willian",pos:["RW"],stamina:100},
+      {name:"Kenan Yıldız",pos:["LW","AM"],stamina:100},
+      {name:"Ferran Torres",pos:["RW","ST"],stamina:100},
+      {name:"Savinho",pos:["RW"],stamina:100},
+      {name:"Lamine Yamal",pos:["RW"],stamina:100},
+      {name:"Eli Junior Kroupi",pos:["ST"],stamina:100},
+      {name:"Álvaro Morata",pos:["ST"],stamina:100},
+      {name:"Rafael Struick",pos:["ST"],stamina:100},
+      {name:"Vitor Roque",pos:["ST"],stamina:100}
+    ]
+  },
+
+  barca: {
+    name: "Barcelona",
+    players: [
+      {name:"Gianluigi Donnarumma",pos:["GK"],stamina:100},
+      {name:"Yann Sommer",pos:["GK"],stamina:100},
+      {name:"Iñaki Peña",pos:["GK"],stamina:100},
+      {name:"Ander Astralaga",pos:["GK"],stamina:100},
+
+      {name:"Eric García",pos:["CB"],stamina:100},
+      {name:"Ronald Araújo",pos:["CB"],stamina:100},
+      {name:"Íñigo Martínez",pos:["CB"],stamina:100},
+      {name:"Andreas Christensen",pos:["CB"],stamina:100},
+      {name:"Josh Acheampong",pos:["RB"],stamina:100},
+      {name:"Jules Koundé",pos:["CB","RB"],stamina:100},
+      {name:"Sergi Domínguez",pos:["CB"],stamina:100},
+      {name:"Andrew Robertson",pos:["LB"],stamina:100},
+
+      {name:"Marc Casadó",pos:["DM"],stamina:100},
+      {name:"Pedri González",pos:["CM","AM"],stamina:100},
+      {name:"Dani Olmo",pos:["AM","LW"],stamina:100},
+      {name:"Florian Wirtz",pos:["AM","LW"],stamina:100},
+      {name:"Claudio Echeverri",pos:["AM"],stamina:100},
+      {name:"Nico Paz",pos:["AM"],stamina:100},
+
+      {name:"Ansu Fati",pos:["LW"],stamina:100},
+      {name:"Pedro Neto",pos:["LW","RW"],stamina:100},
+      {name:"Désiré Doué",pos:["LW","AM"],stamina:100},
+      {name:"Christian Pulisic",pos:["LW","RW"],stamina:100},
+      {name:"Pau Víctor",pos:["ST"],stamina:100},
+      {name:"Marc Guiu",pos:["ST"],stamina:100}
+    ]
+  },
+
+  leverkusen: {
+    name: "Bayer Leverkusen",
+    players: [
+      {name:"Lukáš Hrádecký",pos:["GK"],stamina:100},
+      {name:"Lucas Chevalier",pos:["GK"],stamina:100},
+      {name:"Manuel Neuer(NEW)",pos:["GK"],stamina:100},
+      {name:"Matěj Kovář",pos:["GK"],stamina:100},
+      {name:"Niklas Lomb",pos:["GK"],stamina:100},
+
+      {name:"Dean Huijsen",pos:["CB"],stamina:100},
+      {name:"Pau Cubarsí(LOAN)",pos:["CB"],stamina:100},
+      {name:"Arthur Melo",pos:["CM"],stamina:100},
+      {name:"Jeanuël Belocian",pos:["CB"],stamina:100},
+      {name:"Nordi Mukiele",pos:["RB"],stamina:100},
+      {name:"Levi Colwill(NEW)",pos:["CB"],stamina:100},
+      {name:"Soumaila Fofana",pos:["DM"],stamina:100},
+      {name:"Jaremy Jacquet(NEW)",pos:["CB"],stamina:100},
+      {name:"Olivier Raterink",pos:["CM"],stamina:100},
+
+      {name:"Robert Andrich",pos:["DM"],stamina:100},
+      {name:"Granit Xhaka",pos:["CM","DM"],stamina:100},
+      {name:"Jonas Hofmann",pos:["AM","RW"],stamina:100},
+      {name:"Kiernan Dewsbury-Hall(NEW)",pos:["CM","AM"],stamina:100},
+      {name:"Nathan Tella",pos:["RW"],stamina:100},
+      {name:"Álex Grimaldo(MVP)",pos:["LB","LM"],stamina:100},
+      {name:"Lennart Karl(NEW)",pos:["AM"],stamina:100},
+      {name:"Amine Aourir",pos:["AM"],stamina:100},
+      {name:"Frank Onyeka",pos:["DM"],stamina:100},
+
+      {name:"Ole Romeny",pos:["LW"],stamina:100},
+      {name:"Michael Olise",pos:["RW","AM"],stamina:100},
+      {name:"Amine Adli",pos:["LW","RW"],stamina:100},
+      {name:"Federico Chiesa",pos:["LW","RW"],stamina:100},
+      {name:"Patrik Schick",pos:["ST"],stamina:100},
+      {name:"Martin Terrier",pos:["LW","ST"],stamina:100},
+      {name:"Artem Stepanov",pos:["ST"],stamina:100},
+      {name:"Erling Haaland",pos:["ST"],stamina:100},
+      {name:"Julián Álvarez",pos:["ST","AM"],stamina:100}
+    ]
+  },
+
+  chelsea: {
+    name: "Chelsea",
+    players: [
+      {name:"Giorgi Mamardashvili",pos:["GK"],stamina:100},
+      {name:"Marcus Bettinelli",pos:["GK"],stamina:100},
+
+      {name:"João Cancelo",pos:["RB","LB"],stamina:100},
+      {name:"Wesley Fofana",pos:["CB"],stamina:100},
+      {name:"William Saliba",pos:["CB"],stamina:100},
+      {name:"Alphonso Davies",pos:["LB","LM"],stamina:100},
+      {name:"Malo Gusto",pos:["RB"],stamina:100},
+      {name:"Reece James",pos:["RB"],stamina:100},
+      {name:"Marc Cucurella",pos:["LB"],stamina:100},
+      {name:"Tosin Adarabioyo",pos:["CB"],stamina:100},
+      {name:"Renato Veiga",pos:["CB","DM"],stamina:100},
+
+      {name:"Roméo Lavia",pos:["DM"],stamina:100},
+      {name:"Moisés Caicedo",pos:["DM"],stamina:100},
+      {name:"Alex Matos",pos:["CM"],stamina:100},
+      {name:"Enzo Fernández",pos:["CM"],stamina:100},
+      {name:"Declan Rice",pos:["DM","CM"],stamina:100},
+      {name:"Cesare Casadei",pos:["CM"],stamina:100},
+
+      {name:"Christopher Nkunku",pos:["AM","ST"],stamina:100},
+      {name:"Kai Havertz",pos:["AM","ST"],stamina:100},
+      {name:"João Félix",pos:["AM"],stamina:100},
+      {name:"Cole Palmer",pos:["AM","RW"],stamina:100},
+      {name:"Raheem Sterling",pos:["LW","RW"],stamina:100},
+      {name:"Jadon Sancho",pos:["LW","RW"],stamina:100},
+      {name:"Antony Matheus dos Santos",pos:["RW"],stamina:100},
+      {name:"Harvey Vale",pos:["LW"],stamina:100},
+      {name:"Khvicha Kvaratskhelia",pos:["LW"],stamina:100},
+      {name:"Noni Madueke",pos:["RW"],stamina:100},
+      {name:"Victor Osimhen",pos:["ST"],stamina:100}
+    ]
+  },
+
+  munchen: {
+    name: "Bayern München",
+    players: [
+      {name:"Sven Ulreich",pos:["GK"],stamina:100},
+      {name:"Marc-André ter Stegen",pos:["GK"],stamina:100},
+      {name:"Daniel Peretz",pos:["GK"],stamina:100},
+
+      {name:"Murillo Santiago Costa dos Santos",pos:["CB"],stamina:100},
+      {name:"Raphaël Guerreiro",pos:["LB","CM"],stamina:100},
+      {name:"Sacha Boey",pos:["RB"],stamina:100},
+      {name:"Joshua Kimmich",pos:["CM","RB"],stamina:100},
+      {name:"Kim Min-jae",pos:["CB"],stamina:100},
+      {name:"Eric Dier",pos:["CB"],stamina:100},
+      {name:"Hiroki Ito",pos:["CB","LB"],stamina:100},
+      {name:"Dayot Upamecano",pos:["CB"],stamina:100},
+      {name:"Tarek Buchmann",pos:["CB"],stamina:100},
+      {name:"Josip Stanišić",pos:["RB","CB"],stamina:100},
+
+      {name:"João Neves",pos:["DM","CM"],stamina:100},
+      {name:"Konrad Laimer",pos:["CM","DM"],stamina:100},
+      {name:"Aleksandar Pavlović",pos:["DM","CM"],stamina:100},
+      {name:"Leon Goretzka",pos:["CM"],stamina:100},
+
+      {name:"Kingsley Coman",pos:["LW"],stamina:100},
+      {name:"Thomas Müller",pos:["AM","ST"],stamina:100},
+      {name:"Leroy Sané",pos:["RW","LW"],stamina:100},
+      {name:"Nestory Irankunda",pos:["LW"],stamina:100},
+      {name:"Rafael Leão",pos:["LW"],stamina:100},
+      {name:"Arijon Ibrahimović",pos:["AM"],stamina:100},
+      {name:"Harry Kane",pos:["ST"],stamina:100},
+      {name:"Mathys Tel",pos:["ST","LW"],stamina:100}
+    ]
+  }
+};
+
+const formations={
+  433:[
+    ["GK",50,90],
+    ["LB",15,70],["CB",35,70],["CB",55,70],["RB",75,70],
+    ["CM",30,45],["CM",50,45],["CM",70,45],
+    ["LW",25,20],["ST",50,15],["RW",75,20]
   ],
-  "Chelsea":[
-    {name:"Giorgi Mamardashvili",pos:["GK"]},{name:"Filip Jorgensen",pos:["GK"]},{name:"Marcus Bettinelli",pos:["GK"]},
-    {name:"Reece James",pos:["RB","RM","DM","CM"]},{name:"Wesley Fofana",pos:["CB"]},{name:"William Saliba",pos:["CB"]},{name:"Malo Gusto",pos:["RB","RM","CM","DM"]},
-    {name:"Tosin Adarabioyo",pos:["CB"]},{name:"Joao Cancelo",pos:["RB","LB","RM","LM","CB"]},
-    {name:"Alphonso Davies",pos:["LB","LW","LM"]},{name:"Marc Cucurella",pos:["LB","LM","CB"]},{name:"Renato Veiga",pos:["CB","DM"]},
-    {name:"Enzo Fernandez",pos:["CM","DM","AM"]},{name:"Declan Rice",pos:["CM","DM"]},{name:"Moises Caicedo",pos:["DM","CM"]},{name:"Christopher Nkunku",pos:["AM","ST"]},
-    {name:"Alex Matos",pos:["CM"]},{name:"Romeo Lavia",pos:["DM","CM"]},{name:"Cesare Casadei",pos:["CM","AM"]},{name:"Harvey Vale",pos:["AM","LW"]},
-    {name:"Kai Havertz",pos:["AM","ST","CM","LB"]},{name:"Noni Madueke",pos:["RW","RM"]},{name:"Raheem Sterling",pos:["LW","RW","LM","ST"]},{name:"Jadon Sancho",pos:["LW","RW","AM","LM","RM"]},
-    {name:"Victor Osimhen",pos:["ST"]},{name:"Antony",pos:["RW","LW","RM"]},{name:"Cole Palmer",pos:["RW","AM","RM"]},{name:"Joao Felix",pos:["AM","ST","LW","LM"]},{name:"Khvicha Kvaratskhelia",pos:["LW","RW","LM","RM","ST"]}
-  ],
-  "Inter Milan":[
-    {name:"Sommer", pos:["GK"]},{name:"Josep Martinez", pos:["GK"]},{name:"Radu", pos:["GK"]},{name:"Di gennaro", pos:["GK"]},
-    {name:"De vrij", pos:["CB"]},{name:"Acerbi", pos:["CB"]},{name:"Bastoni", pos:["CB"]},{name:"Bisseck", pos:["CB"]},
-    {name:"Darmian", pos:["RB","LB"]},{name:"Gerard Martin", pos:["LB","LM"]},{name:"Palacios", pos:["CM"]},{name:"Kyle Walker", pos:["RB","RM"]},
-    {name:"Çalhanoğlu", pos:["DM","CM"]},{name:"Mkhitaryan", pos:["AM"]},{name:"Barella", pos:["CM"]},{name:"De jong", pos:["CM","DM"]},
-    {name:"Asllani", pos:["AM"]},{name:"Zielinski", pos:["CM"]},{name:"Carlos Augusto", pos:["LB"]},{name:"Buchanan", pos:["LB","CB"]},
-    {name:"Dumfries", pos:["RB"]},{name:"Walker", pos:["RB"]},{name:"Salcedo", pos:["ST"]},{name:"J. Correa", pos:["ST"]},
-    {name:"M. Taremi", pos:["ST"]},{name:"Víctor Gyokeres", pos:["ST"]},{name:"Alexander Isak", pos:["ST"]}
-  ],
-  "AC Milan":[
-    {name:"Flip Jorgensen",pos:["GK"]},{name:"Lapo Nava",pos:["GK"]},{name:"Lorenzo Torriani",pos:["GK"]},
-    {name:"Davide Calabria",pos:["RB"]},{name:"Fikayo Tomori",pos:["CB"]},{name:"Benjamin Pavard",pos:["CB","RB"]},{name:"Federico Dimarco",pos:["LB","LM"]},{name:"Archie Gray",pos:["CB","RB","LB","RM","DM"]},{name:"Alejandro Balde",pos:["LB","LM","LW"]},{name:"Pau Cubarsi",pos:["CB"]},{name:"Malick Thiaw",pos:["CB"]},{name:"Jeremie Frimpong",pos:["RB","RM","RW"]},{name:"Matteo Gabbia",pos:["CB"]},
-    {name:"Emerson Royal",pos:["RB"]},{name:"Fode Ballo-Toure",pos:["LB"]},{name:"Alex Jimenez",pos:["RB","LB"]},{name:"Davide Bartesaghi",pos:["LB"]},
-    {name:"Reggie Walsh",pos:["CM","AM"]},{name:"Willian Estevao",pos:["RW","RM","AM","LW","LM"]},{name:"Pablo Gavi",pos:["CM"]},{name:"Franco Mastantuono",pos:["CM","AM"]},{name:"Jaden Guzman",pos:["RW","LW","RM"]},{name:"Arda Guler",pos:["CM","AM"]},{name:"Jamal Musiala",pos:["CM","AM","LM"]},
-    {name:"Fermin Lopez",pos:["AM","CM","LM"]},{name:"Youssouf Fofana",pos:["DM"]},{name:"Marc Bernal",pos:["DM","CM"]},{name:"Ferran Torres",pos:["LW","ST"]},{name:"Ismael Bennacer",pos:["CM","DM"]},
-    {name:"Kendry Paez",pos:["AM","CM","LW","LM","RW","RM"]},{name:"Rayan Cherki",pos:["AM","LM","LW"]},{name:"Savinho",pos:["AM","RM","LW","RW"]},{name:"Lennart Karl",pos:["AM","CM","LW","RW","RM"]},{name:"Yunus Musah",pos:["CM"]},
-    {name:"Francesco Terracciano",pos:["RB"]},{name:"Kevin Zeroli",pos:["CM"]},{name:"Mattia Liberali",pos:["AM"]},
-    {name:"Raphael Belinho",pos:["AM","LM","RM","LW","RW"]},{name:"Lamine Yamal",pos:["RW","AM","RM","LM","LW"]},{name:"Eli Junior Kroupi",pos:["ST"]},{name:"Samuel Chukwueze",pos:["RW"]},
-    {name:"Alvaro Morata",pos:["ST"]},{name:"Joshua Zirkzee",pos:["ST"]},{name:"Luka Jovic",pos:["ST"]},{name:"Noah Okafor",pos:["LW","ST"]},{name:"R. Struick",pos:["ST"]},{name:"Cheick Traore",pos:["LB"]}
-  ],
-  "Barcelona":[
-    {name:"Gianluigi Donnarumma",pos:["GK"]},{name:"Yann Sommer",pos:["GK"]},{name:"Inaki Pena",pos:["GK"]},{name:"Astralaga",pos:["GK"]},
-    {name:"Sergi Dominguez",pos:["CB"]},{name:"Josh Acheampong",pos:["CB","RB"]},{name:"Eric Garcia",pos:["CB","DM"]},{name:"Andreas Christensen",pos:["CB","DM"]},{name:"Inigo Martinez",pos:["CB"]},{name:"Jules Kounde",pos:["CB","RB"]},{name:"Ronald Araujo",pos:["CB"]},{name:"Andrew Robetson",pos:["LB","LM"]},
-    {name:"Dewsbury-Hall",pos:["CM","AM"]},{name:"Pedri",pos:["CM","AM"]},{name:"Dani Olmo",pos:["AM","LW"]},{name:"Marc Casado",pos:["DM","CM"]},
-    {name:"Ansu Fati",pos:["LW","RW"]},{name:"Pau Victor",pos:["ST"]},{name:"Florian Wirtz",pos:["AM","CM","LW"]},{name:"Robert Lewandowski",pos:["ST"]},{name:"Nico Williams",pos:["LW","LM","RW"]},{name:"Desire Doue",pos:["LW","LM","RW"]},
-    {name:"Marc Guiu",pos:["ST"]},{name:"Victor Roque",pos:["ST"]},{name:"Pedro Neto",pos:["RW","RM","ST","LW"]}
+  4231:[
+    ["GK",50,90],
+    ["LB",15,70],["CB",35,70],["CB",55,70],["RB",75,70],
+    ["DM",40,45],["DM",60,45],
+    ["AM",50,30],
+    ["LW",25,25],["RW",75,25],
+    ["ST",50,15]
   ]
 };
-      
-// =================== BAGIAN 1: POSISI FIELD ===================
-const field = document.getElementById('field');
-const clubSelect = document.getElementById('clubSelect');
-const formationSelect = document.getElementById('formationSelect');
-const saveBtn = document.getElementById('saveBtn');
-const captainSelect = document.getElementById('captainSelect');
-const playerSelect = document.getElementById('playerSelect');
 
-const defaultPositions = [
-  {id:'GK', label:'GK', top:800, left:300},
-  {id:'CB1', label:'CB', top:650, left:200},
-  {id:'CB2', label:'CB', top:650, left:400},
-  {id:'LB', label:'LB', top:650, left:100},
-  {id:'RB', label:'RB', top:650, left:500},
-  {id:'CM1', label:'CM', top:500, left:200},
-  {id:'CM2', label:'CM', top:500, left:400},
-  {id:'CM3', label:'CM', top:500, left:300},
-  {id:'LW', label:'LW', top:350, left:100},
-  {id:'RW', label:'RW', top:350, left:500},
-  {id:'ST', label:'ST', top:200, left:300}
-];
+// ================= STATE =================
+let reserves = [];
+let bench = new Array(9).fill(null);
+let xi = [];
 
-const formations = {
-  "4-3-3":[
-    {id:'GK', label:'GK', top:800, left:300},
-    {id:'CB1', label:'CB', top:650, left:200},
-    {id:'CB2', label:'CB', top:650, left:400},
-    {id:'LB', label:'LB', top:650, left:100},
-    {id:'RB', label:'RB', top:650, left:500},
-    {id:'CM1', label:'CM', top:500, left:200},
-    {id:'CM2', label:'CM', top:500, left:400},
-    {id:'CM3', label:'CM', top:500, left:300},
-    {id:'LW', label:'LW', top:350, left:100},
-    {id:'RW', label:'RW', top:350, left:500},
-    {id:'ST', label:'ST', top:200, left:300}
-  ],
-  "4-3-3A":[
-    {id:'GK', label:'GK', top:800, left:300},
-    {id:'CB1', label:'CB', top:650, left:200},
-    {id:'CB2', label:'CB', top:650, left:400},
-    {id:'LB', label:'LB', top:650, left:100},
-    {id:'RB', label:'RB', top:650, left:500},
-    {id:'CM1', label:'CM', top:500, left:200},
-    {id:'CM2', label:'CM', top:500, left:400},
-    {id:'AM', label:'AM', top:440, left:300},
-    {id:'LW', label:'LW', top:350, left:100},
-    {id:'RW', label:'RW', top:350, left:500},
-    {id:'ST', label:'ST', top:200, left:300}
-  ],
-  "4-3-3D":[
-    {id:'GK', label:'GK', top:800, left:300},
-    {id:'CB1', label:'CB', top:650, left:200},
-    {id:'CB2', label:'CB', top:650, left:400},
-    {id:'LB', label:'LB', top:650, left:100},
-    {id:'RB', label:'RB', top:650, left:500},
-    {id:'CM1', label:'CM', top:500, left:200},
-    {id:'CM2', label:'CM', top:500, left:400},
-    {id:'DM', label:'DM', top:560, left:300},
-    {id:'LW', label:'LW', top:350, left:100},
-    {id:'RW', label:'RW', top:350, left:500},
-    {id:'ST', label:'ST', top:200, left:300}
-  ],
-  "4-2-1-3":[
-    {id:'GK', label:'GK', top:800, left:300},
-    {id:'CB1', label:'CB', top:650, left:200},
-    {id:'CB2', label:'CB', top:650, left:400},
-    {id:'LB', label:'LB', top:650, left:100},
-    {id:'RB', label:'RB', top:650, left:500},
-    {id:'DM1', label:'DM', top:560, left:200},
-    {id:'DM2', label:'DM', top:560, left:400},
-    {id:'CM', label:'CM', top:500, left:300},
-    {id:'LW', label:'LW', top:350, left:100},
-    {id:'RW', label:'RW', top:350, left:500},
-    {id:'ST', label:'ST', top:200, left:300}
-  ],
-  "4-2-1-3A":[
-    {id:'GK', label:'GK', top:800, left:300},
-    {id:'CB1', label:'CB', top:650, left:200},
-    {id:'CB2', label:'CB', top:650, left:400},
-    {id:'LB', label:'LB', top:650, left:100},
-    {id:'RB', label:'RB', top:650, left:500},
-    {id:'DM1', label:'DM', top:560, left:200},
-    {id:'DM2', label:'DM', top:560, left:400},
-    {id:'AM', label:'AM', top:440, left:300},
-    {id:'LW', label:'LW', top:350, left:100},
-    {id:'RW', label:'RW', top:350, left:500},
-    {id:'ST', label:'ST', top:200, left:300}
-  ],
-  "4-1-2-3":[
-    {id:'GK', label:'GK', top:800, left:300},
-    {id:'CB1', label:'CB', top:650, left:200},
-    {id:'CB2', label:'CB', top:650, left:400},
-    {id:'LB', label:'LB', top:650, left:100},
-    {id:'RB', label:'RB', top:650, left:500},
-    {id:'AM1', label:'AM', top:440, left:200},
-    {id:'AM2', label:'AM', top:440, left:400},
-    {id:'CM', label:'CM', top:500, left:300},
-    {id:'LW', label:'LW', top:350, left:100},
-    {id:'RW', label:'RW', top:350, left:500},
-    {id:'ST', label:'ST', top:200, left:300}
-  ],
-  "4-1-2-3D":[
-    {id:'GK', label:'GK', top:800, left:300},
-    {id:'CB1', label:'CB', top:650, left:200},
-    {id:'CB2', label:'CB', top:650, left:400},
-    {id:'LB', label:'LB', top:650, left:100},
-    {id:'RB', label:'RB', top:650, left:500},
-    {id:'AM1', label:'AM', top:440, left:200},
-    {id:'AM2', label:'AM', top:440, left:400},
-    {id:'DM', label:'DM', top:560, left:300},
-    {id:'LW', label:'LW', top:350, left:100},
-    {id:'RW', label:'RW', top:350, left:500},
-    {id:'ST', label:'ST', top:200, left:300}
-  ],
-  "4-2-3-1":[
-    {id:'GK', label:'GK', top:800, left:300},
-    {id:'CB1', label:'CB', top:650, left:200},
-    {id:'CB2', label:'CB', top:650, left:400},
-    {id:'LB', label:'LB', top:650, left:100},
-    {id:'RB', label:'RB', top:650, left:500},
-    {id:'DM1', label:'DM', top:500, left:200},
-    {id:'DM2', label:'DM', top:500, left:400},
-    {id:'AM1', label:'AM', top:350, left:150},
-    {id:'AM2', label:'AM', top:350, left:300},
-    {id:'AM3', label:'AM', top:350, left:450},
-    {id:'ST', label:'ST', top:200, left:300}
-  ],
-  "3-5-2":[
-    {id:'GK', label:'GK', top:800, left:300},
-    {id:'CB1', label:'CB', top:650, left:150},
-    {id:'CB2', label:'CB', top:650, left:300},
-    {id:'CB3', label:'CB', top:650, left:450},
-    {id:'LM', label:'LM', top:500, left:100},
-    {id:'CM1', label:'CM', top:500, left:200},
-    {id:'CM2', label:'CM', top:500, left:300},
-    {id:'CM3', label:'CM', top:500, left:400},
-    {id:'RM', label:'RM', top:500, left:500},
-    {id:'ST1', label:'ST', top:350, left:200},
-    {id:'ST2', label:'ST', top:350, left:400}
-  ],
-"4-2-4":[
-  {id:'GK', label:'GK', top:800, left:300},
-  {id:'LB', label:'LB', top:650, left:100},
-  {id:'CB1', label:'CB', top:650, left:200},
-  {id:'CB2', label:'CB', top:650, left:400},
-  {id:'RB', label:'RB', top:650, left:500},
-  {id:'CM1', label:'CM', top:500, left:250},
-  {id:'CM2', label:'CM', top:500, left:350},
-  {id:'LW', label:'LW', top:350, left:100},
-  {id:'ST1', label:'ST', top:230, left:250},
-  {id:'ST2', label:'ST', top:230, left:350},
-  {id:'RW', label:'RW', top:350, left:500}
-],
-"3-4-2-1":[
-  {id:'GK', label:'GK', top:800, left:300},
-  {id:'CB1', label:'CB', top:650, left:150},
-  {id:'CB2', label:'CB', top:650, left:300},
-  {id:'CB3', label:'CB', top:650, left:450},
-  {id:'LM', label:'LM', top:500, left:100},
-  {id:'CM1', label:'CM', top:500, left:200},
-  {id:'CM2', label:'CM', top:500, left:400},
-  {id:'RM', label:'RM', top:500, left:500},
-  {id:'AM1', label:'AM', top:350, left:250},
-  {id:'AM2', label:'AM', top:350, left:350},
-  {id:'ST', label:'ST', top:200, left:300}
-],
-"3-1-4-2": [
-  { id: 'GK', label: 'GK', top: 800, left: 300 },
-  { id: 'CB1', label: 'CB', top: 650, left: 150 },
-  { id: 'CB2', label: 'CB', top: 650, left: 300 },
-  { id: 'CB3', label: 'CB', top: 650, left: 450 },
-  { id: 'CDM', label: 'CDM', top: 575, left: 300 },
-  { id: 'LM', label: 'LM', top: 500, left: 100 },
-  { id: 'LCM', label: 'CM', top: 500, left: 220 },
-  { id: 'RCM', label: 'CM', top: 500, left: 380 },
-  { id: 'RM', label: 'RM', top: 500, left: 500 },
-  { id: 'ST1', label: 'ST', top: 350, left: 250 },
-  { id: 'ST2', label: 'ST', top: 350, left: 350 }
-],
-"3-6-1": [
-  { id: 'GK', label: 'GK', top: 800, left: 300 },
-  { id: 'CB1', label: 'CB', top: 650, left: 150 },
-  { id: 'CB2', label: 'CB', top: 650, left: 300 },
-  { id: 'CB3', label: 'CB', top: 650, left: 450 },
-  { id: 'LCM', label: 'CM', top: 550, left: 200 },
-  { id: 'CM', label: 'CM', top: 550, left: 300 },
-  { id: 'RCM', label: 'CM', top: 550, left: 400 },
-  { id: 'LAM', label: 'AM', top: 450, left: 250 },
-  { id: 'RAM', label: 'AM', top: 450, left: 350 },
-  { id: 'ST', label: 'ST', top: 300, left: 300 }
-],
-"2-3-5": [
-  { id: 'GK', label: 'GK', top: 800, left: 300 },
-  { id: 'CB1', label: 'CB', top: 650, left: 200 },
-  { id: 'CB2', label: 'CB', top: 650, left: 400 },
-  { id: 'LM', label: 'LM', top: 525, left: 150 },
-  { id: 'CM', label: 'CM', top: 525, left: 300 },
-  { id: 'RM', label: 'RM', top: 525, left: 450 },
-  { id: 'LW', label: 'LW', top: 400, left: 100 },
-  { id: 'LAM', label: 'AM', top: 400, left: 225 },
-  { id: 'ST', label: 'ST', top: 340, left: 300 },
-  { id: 'RAM', label: 'AM', top: 400, left: 375 },
-  { id: 'RW', label: 'RW', top: 400, left: 500 }
-],
-"3-4-3": [
-  { id: 'GK', label: 'GK', top: 800, left: 300 },
-  { id: 'CB1', label: 'CB', top: 650, left: 150 },
-  { id: 'CB2', label: 'CB', top: 650, left: 300 },
-  { id: 'CB3', label: 'CB', top: 650, left: 450 },
-  { id: 'LM', label: 'LM', top: 500, left: 100 },
-  { id: 'CM1', label: 'CM', top: 500, left: 250 },
-  { id: 'CM2', label: 'CM', top: 500, left: 350 },
-  { id: 'RM', label: 'RM', top: 500, left: 500 },
-  { id: 'LW', label: 'LW', top: 350, left: 150 },
-  { id: 'ST', label: 'ST', top: 300, left: 300 },
-  { id: 'RW', label: 'RW', top: 350, left: 450 }
-]
-};
+let selectedPlayer = null;
+let selectedFrom = null;
 
-formationSelect.addEventListener('change', ()=>{
-  const f = formationSelect.value;
-  if(!f) return;
+// ================= INIT =================
+const clubSelect = document.getElementById("clubSelect");
+const formationSelect = document.getElementById("formationSelect");
 
-  // Hapus posisi lama
-  document.querySelectorAll('.position').forEach(p=>p.remove());
-
-  // Buat posisi baru
-  formations[f].forEach(p=>createPosition(p.id,p.label,p.top,p.left));
+Object.keys(clubs).forEach(k=>{
+  const o=document.createElement("option");
+  o.value=k;o.textContent=clubs[k].name;
+  clubSelect.appendChild(o);
 });
 
-function createPosition(id, label, top, left){
-  const div=document.createElement('div');
-  div.className='position'; div.id=id; div.style.top=top+'px'; div.style.left=left+'px';
-  div.innerText=label; div.dataset.pos=label;
-  field.appendChild(div);
+clubSelect.onchange = () => {
+  if(!clubSelect.value) return;
+  reserves = clubs[clubSelect.value].players.map(p=>({...p}));
+  bench = new Array(9).fill(null);
+  initXI();
+  clearSelection();
+  drawAll();
+};
+
+formationSelect.onchange = ()=>{
+  initXI();
+  clearSelection();
+  drawAll();
+};
+
+function initXI(){
+  xi = formations[formationSelect.value].map(f=>({
+    role:f[0],x:f[1],y:f[2],player:null
+  }));
 }
-defaultPositions.forEach(p=>createPosition(p.id,p.label,p.top,p.left));
 
-// =================== BAGIAN 3: LOGIKA ===================
-function populatePlayerSelect(clubName) {
-  playerSelect.innerHTML = '';
-  clubs[clubName].forEach(p=>{
-    const opt = document.createElement('option'); opt.value=p.name; opt.innerText=p.name;
-    playerSelect.appendChild(opt);
-  });
-  captainSelect.innerHTML='<option value="">-- Pilih Kapten --</option>';
-  clubs[clubName].forEach(p=>{
-    const opt=document.createElement('option'); opt.value=p.name; opt.innerText=p.name;
-    captainSelect.appendChild(opt);
-  });
+// ================= DRAW =================
+function drawAll(){
+  drawField();
+  drawBench();
+  drawReserves();
 }
 
-field.addEventListener('click', e => {
-  // Hanya kalau yang diklik adalah slot posisi
-  if (!e.target.classList.contains('position')) return;
+function drawField(){
+  const field=document.getElementById("field");
+  field.innerHTML="";
+  xi.forEach((s,i)=>{
+    const d=document.createElement("div");
+    d.className="slot-xi";
+    d.style.left=s.x+"%";
+    d.style.top=s.y+"%";
 
-  const slot = e.target;
-
-  // Tampilkan dropdown pemain saat posisi diklik
-  playerSelect.style.display = 'inline';
-  playerSelect.value = ""; // reset pilihan sebelumnya
-
-  playerSelect.onchange = function() {
-    const playerName = playerSelect.value;
-    if(!playerName) return;
-
-    slot.innerText = playerName;
-
-    const clubName = clubSelect.value;
-    const player = clubs[clubName].find(p => p.name === playerName);
-
-    // Warna hijau kalau posisi valid, merah kalau tidak
-    if (player && player.pos.includes(slot.dataset.pos)) {
-      slot.classList.remove('invalid');
-      slot.classList.add('valid');
-    } else {
-      slot.classList.remove('valid');
-      slot.classList.add('invalid');
+    if(s.player){
+      d.innerHTML=`
+        <div class="name">${s.player.name}</div>
+        <div class="pos">${s.role}</div>
+        <div class="stamina"><div style="width:${s.player.stamina}%"></div></div>
+      `;
+      d.onclick=()=>selectPlayer(s.player,"xi",i,d);
+    }else{
+      d.innerHTML=`<div class="pos">${s.role}</div>`;
+      d.onclick=()=>placeHere("xi",i);
     }
+
+    if(selectedFrom && selectedFrom.from==="xi" && selectedFrom.index===i){
+      d.classList.add("active");
+    }
+
+    field.appendChild(d);
+  });
+}
+
+function drawBench(){
+  const b=document.getElementById("bench");
+  b.innerHTML="";
+  bench.forEach((p,i)=>{
+    const d=document.createElement("div");
+    d.className="bench-slot";
+
+    if(p){
+      d.innerHTML=`
+        <div class="name">${p.name}</div>
+        <div class="stamina"><div style="width:${p.stamina}%"></div></div>
+      `;
+      d.onclick=()=>selectPlayer(p,"bench",i,d);
+    }else{
+      d.innerHTML="Kosong";
+      d.onclick=()=>placeHere("bench",i);
+    }
+
+    if(selectedFrom && selectedFrom.from==="bench" && selectedFrom.index===i){
+      d.classList.add("active");
+    }
+
+    b.appendChild(d);
+  });
+}
+
+function drawReserves(){
+  const r=document.getElementById("reserves");
+  r.innerHTML="";
+  reserves.forEach((p,i)=>{
+    const d=document.createElement("div");
+    d.className="item";
+    d.innerHTML=`
+      ${p.name}
+      <div class="stamina"><div style="width:${p.stamina}%"></div></div>
+    `;
+    d.onclick=()=>selectPlayer(p,"reserves",i,d);
+
+    if(selectedFrom && selectedFrom.from==="reserves" && selectedFrom.index===i){
+      d.classList.add("active");
+    }
+
+    r.appendChild(d);
+  });
+}
+
+// ================= CORE LOGIC =================
+function selectPlayer(p, from, index, el){
+  selectedPlayer = p;
+  selectedFrom = {from,index};
+  document.querySelectorAll(".active").forEach(e=>e.classList.remove("active"));
+  el.classList.add("active");
+}
+
+function placeHere(to, index){
+  if(!selectedPlayer) return;
+
+  // ambil target
+  let target = null;
+  if(to==="xi") target = xi[index].player;
+  if(to==="bench") target = bench[index];
+
+  // hapus dari asal
+  if(selectedFrom.from==="xi") xi[selectedFrom.index].player=null;
+  if(selectedFrom.from==="bench") bench[selectedFrom.index]=null;
+  if(selectedFrom.from==="reserves") reserves.splice(selectedFrom.index,1);
+
+  // taruh ke target
+  if(to==="xi") xi[index].player = selectedPlayer;
+  if(to==="bench") bench[index] = selectedPlayer;
+
+  // swap balik
+  if(target){
+    if(selectedFrom.from==="xi") xi[selectedFrom.index].player = target;
+    if(selectedFrom.from==="bench") bench[selectedFrom.index] = target;
+    if(selectedFrom.from==="reserves") reserves.push(target);
   }
-});
 
-saveBtn.onclick = ()=>{
-  const lineup={};
-  defaultPositions.forEach(p=>{
-    const el=document.getElementById(p.id); lineup[p.id]=el.innerText||"";
-  });
-  const subs=[]; document.querySelectorAll('.sub').forEach(s=>subs.push(s.innerText));
-  const captain=captainSelect.value;
-  const data={lineup, subs, captain};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='lineup.json'; a.click();
-  URL.revokeObjectURL(url);
-};
+  clearSelection();
+  drawAll();
+}
 
-// =================== FITUR KAPTEN ===================
-captainSelect.onchange = ()=>{
-  const captainName = captainSelect.value;
+function sendToReserves(){
+  if(!selectedPlayer) return alert("Pilih pemain dulu");
 
-  // Hapus tanda (C) lama di semua posisi
-  document.querySelectorAll('.position').forEach(pos=>{
-    pos.innerText = pos.innerText.replace(" (C)", "");
-  });
+  if(selectedFrom.from==="xi") xi[selectedFrom.index].player=null;
+  if(selectedFrom.from==="bench") bench[selectedFrom.index]=null;
+  if(selectedFrom.from==="reserves") return;
 
-  // Tambahkan tanda (C) di pemain yang dipilih sebagai kapten
-  document.querySelectorAll('.position').forEach(pos=>{
-    if(pos.innerText === captainName){
-      pos.innerText = pos.innerText + " (C)";
-    }
-  });
-};
+  reserves.push(selectedPlayer);
+  clearSelection();
+  drawAll();
+}
 
-clubSelect.addEventListener('change', ()=>{
-  const clubName=clubSelect.value; if(!clubName) return; populatePlayerSelect(clubName);
-  defaultPositions.forEach(p=>{ const el=document.getElementById(p.id); el.innerText=p.label; el.classList.remove('valid','invalid');});
-});
+function clearSelection(){
+  selectedPlayer=null;
+  selectedFrom=null;
+  document.querySelectorAll(".active").forEach(e=>e.classList.remove("active"));
+}
+</script>
+
 </script>
 </body>
 </html>
