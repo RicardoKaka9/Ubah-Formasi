@@ -61,6 +61,7 @@ select{padding:6px;margin:4px}
 </select>
 <select id="formationSelect">
   <option value="433">4-3-3</option>
+  <option value="555">4-3-3 A</option>
   <option value="4231">4-2-3-1</option>
   <option value="3421">3-4-2-1</option>
 </select>
@@ -95,61 +96,51 @@ const clubs = {
     name: "AC Milan",
     players: [
       {name:"Kepa Arrizabalaga",pos:["GK"],stamina:100},
-      {name:"Filip Jörgensen",pos:["GK"],stamina:100},
       {name:"David De Gea",pos:["GK"],stamina:100},
 
-      {name:"Benjamin Pavard",pos:["CB","RB"],stamina:100},
-      {name:"Alejandro Balde",pos:["LB","LM"],stamina:100},
-      {name:"Jeremie Frimpong",pos:["RB","RM","RW"],stamina:100},
-      {name:"António Silva",pos:["CB"],stamina:100},
-      {name:"Malick Thiaw",pos:["CB"],stamina:100},
-      {name:"Davide Calabria",pos:["RB"],stamina:100},
       {name:"Alessandro Bastoni",pos:["CB"],stamina:100},
+      {name:"Benjamin Pavard",pos:["CB","RB"],stamina:100},
+      {name:"António Silva",pos:["CB"],stamina:100},
+      {name:"Piero Hincapié",pos:["CB"],stamina:100},
       {name:"Fikayo Tomori",pos:["CB"],stamina:100},
-      {name:"Jorrel Hato",pos:["CB","LB"],stamina:100},
-      {name:"Emerson Royal",pos:["RB"],stamina:100},
+      {name:"Malick Thiaw",pos:["CB"],stamina:100},
       {name:"Matteo Gabbia",pos:["CB"],stamina:100},
-      {name:"Lewis Hall",pos:["LB","LM"],stamina:100},
-      {name:"Fodé Ballo-Touré",pos:["LB"],stamina:100},
 
-      {name:"Archie Gray",pos:["CM","DM","RB"],stamina:100},
+      {name:"Josh Acheampong",pos:["RB","CB"],stamina:100},
+      {name:"Alejandro Balde",pos:["LB","LM"],stamina:100},
+      {name:"Davide Calabria",pos:["RB"],stamina:100},
+      {name:"Emerson Royal",pos:["RB"],stamina:100},
+      {name"F. Ballo-Toure",pos:["LB","LM"],stamina:100},
+      {name"Lewis Hall",pos:["LB","LM"],stamina:100},
+
+      {name:"Jorginho",pos:["DM","CM"],stamina:100},
       {name:"Youssouf Fofana",pos:["DM","CM"],stamina:100},
-      {name:"Marc Bernal",pos:["DM","CM"],stamina:100},
       {name:"Ismaël Bennacer",pos:["DM","CM"],stamina:100},
-      {name:"Jorginho Frello",pos:["DM","CM"],stamina:100},
-      {name:"Guille Fernández",pos:["CM","AM"],stamina:100},
-      {name:"Jonathan de Guzmán",pos:["CM","AM"],stamina:100},
-      {name:"Yunus Musah",pos:["CM","RM"],stamina:100},
-      {name:"Fermín López",pos:["CM","AM"],stamina:100},
-      {name:"Warren Zaïre-Emery",pos:["CM","DM"],stamina:100},
-      {name:"Gavi Páez",pos:["CM"],stamina:100},
-      {name:"Andrey Santos",pos:["DM","CM"],stamina:100},
-      {name:"Lewis Miley",pos:["DM","CM"],stamina:100},
-      {name:"Lucas Bergvall",pos:["CM","AM"],stamina:100},
-      {name:"Arda Güler",pos:["AM","RW"],stamina:100},
-      {name:"Rayan Cherki",pos:["AM","RW"],stamina:100},
-      {name:"Max Dowman",pos:["AM"],stamina:100},
-      {name:"Reggie Walsh",pos:["CM"],stamina:100},
-      {name:"Rodrigo Mora",pos:["AM"],stamina:100},
-      {name:"Franco Mastantuono",pos:["AM","RW"],stamina:100},
-      {name:"Jamal Musiala",pos:["AM","LW"],stamina:100},
-      {name:"Kendry Páez",pos:["AM"],stamina:100},
-      {name:"Facundo Buonanotte",pos:["AM","RW"],stamina:100},
-      {name:"Adrian Przyborek",pos:["AM"],stamina:100},
 
-      {name:"Filippo Terracciano",pos:["RB","LB"],stamina:100},
-      {name:"Alejandro Garnacho",pos:["LW","RW"],stamina:100},
+      {name:"Gavi",pos:["CM"],stamina:100},
+      {name"Andrey Santos",pos:["DM","CM"],stamina:100},
+      {name:"Yunus Musah",pos:["CM"],stamina:100},
+      {name"Lewis Miley",pos:["DM","CM"],stamina:100},
+      {name:"Max Dowman",pos:["CM"],stamina:100},
+      {name"Guille Fernández",pos:["CM","AM"],stamina:100},
+
+      {name:"Rodrigo Mora",pos:["AM","CM"],stamina:100},
+      {name:"Rayan Cherki",pos:["AM","RW"],stamina:100},
+      {name"Reggie Walsh",pos:["AM","CM"],stamina:100},
+
+      {name:"Estêvão",pos:["RW","RM"],stamina:100},
+      {name:"Lamine Yamal",pos:["RW","LW","LM"],stamina:100},
+      {name"F. Terrancciano",pos:["RM","RB","LB"],stamina:100},
       {name:"Samuel Chukwueze",pos:["RW"],stamina:100},
-      {name:"Rodrigo Belinho",pos:["LW"],stamina:100},
-      {name:"Estêvão Willian",pos:["RW"],stamina:100},
-      {name:"Kenan Yıldız",pos:["LW","AM"],stamina:100},
-      {name:"Ferran Torres",pos:["RW","ST"],stamina:100},
-      {name:"Savinho",pos:["RW"],stamina:100},
-      {name:"Lamine Yamal",pos:["RW"],stamina:100},
-      {name:"Eli Junior Kroupi",pos:["ST"],stamina:100},
-      {name:"Álvaro Morata",pos:["ST"],stamina:100},
+      {name:"Kenan Yıldız",pos:["LW","LM"],stamina:100},
+      {name:"Savinho",pos:["LW","LM","AM","RW"],stamina:100},
+      {name"R. Belinho",pos:["LW"],stamina:100},
+      {name:"Ferran Torres",pos:["LW","ST","LM","RW"],stamina:100},
+
+      {name:"Marc Guiu",pos:["ST"],stamina:100},
+      {name:"Vitor Roque",pos:["ST"],stamina:100},
       {name:"Rafael Struick",pos:["ST"],stamina:100},
-      {name:"Vitor Roque",pos:["ST"],stamina:100}
+      {name:"Álvaro Morata",pos:["ST"],stamina:100}
     ]
   },
 
@@ -189,41 +180,52 @@ const clubs = {
   leverkusen: {
     name: "Bayer Leverkusen",
     players: [
+      // GK
       {name:"Lukáš Hrádecký",pos:["GK"],stamina:100},
+      {name:"Manuel Neuer",pos:["GK"],stamina:100},
       {name:"Lucas Chevalier",pos:["GK"],stamina:100},
-      {name:"Manuel Neuer(NEW)",pos:["GK"],stamina:100},
       {name:"Matěj Kovář",pos:["GK"],stamina:100},
-      {name:"Niklas Lomb",pos:["GK"],stamina:100},
+      {name:"Noah Lomb",pos:["GK"],stamina:100},
 
+// DF
+      {name:"Pau Cubarsí",pos:["CB"],stamina:100},
+      {name:"Levi Colwill",pos:["CB"],stamina:100},
       {name:"Dean Huijsen",pos:["CB"],stamina:100},
-      {name:"Pau Cubarsí(LOAN)",pos:["CB"],stamina:100},
-      {name:"Arthur Melo",pos:["CM"],stamina:100},
-      {name:"Jeanuël Belocian",pos:["CB"],stamina:100},
-      {name:"Nordi Mukiele",pos:["RB"],stamina:100},
-      {name:"Levi Colwill(NEW)",pos:["CB"],stamina:100},
-      {name:"Soumaila Fofana",pos:["DM"],stamina:100},
-      {name:"Jaremy Jacquet(NEW)",pos:["CB"],stamina:100},
-      {name:"Olivier Raterink",pos:["CM"],stamina:100},
+      {name:"Jean Belocian",pos:["CB"],stamina:100},
+      {name:"S. Fofana",pos:["CB"],stamina:100},
+      {name:"J. Jacquet",pos:["CB"],stamina:100},
 
-      {name:"Robert Andrich",pos:["DM"],stamina:100},
-      {name:"Granit Xhaka",pos:["CM","DM"],stamina:100},
-      {name:"Jonas Hofmann",pos:["AM","RW"],stamina:100},
-      {name:"Kiernan Dewsbury-Hall(NEW)",pos:["CM","AM"],stamina:100},
-      {name:"Nathan Tella",pos:["RW"],stamina:100},
-      {name:"Álex Grimaldo(MVP)",pos:["LB","LM"],stamina:100},
-      {name:"Lennart Karl(NEW)",pos:["AM"],stamina:100},
+// FB
+      {name:"Nordi Mukiele",pos:["RB","CB"],stamina:100},
+      {name:"Arthur",pos:["RB"],stamina:100},
+      {name:"Alejandro Grimaldo",pos:["LB","LM"],stamina:100},
+      {name:"O. Raterink",pos:["CB"],stamin:100},
+
+// DM
+      {name:"Granit Xhaka",pos:["DM","CM"],stamina:100},
+      {name:"Frank Onyeka",pos:["DM","CM"],stamina:100},
+      {name:"Robert Andrich",pos:["DM","CB"],stamina:100},
+
+// MF
+      {name:"Kiernan Dewsbury-Hall",pos:["CM","AM","DM"],stamina:100},
+
+// AM
+      {name:"Lennart Karl",pos:["AM","CM"],stamina:100},
+      {name:"Kendry Páez",pos:["AM","CM","RM","RW"],stamina:100},
+      {name:"Jonas Hofmann",pos:["AM","RM"],stamina:100},
       {name:"Amine Aourir",pos:["AM"],stamina:100},
-      {name:"Frank Onyeka",pos:["DM"],stamina:100},
 
-      {name:"Ole Romeny",pos:["LW"],stamina:100},
-      {name:"Michael Olise",pos:["RW","AM"],stamina:100},
-      {name:"Amine Adli",pos:["LW","RW"],stamina:100},
-      {name:"Federico Chiesa",pos:["LW","RW"],stamina:100},
-      {name:"Patrik Schick",pos:["ST"],stamina:100},
+// FW
+      {name:"Michael Olise",pos:["RW","RM"],stamina:100},
+      {name:"Federico Chiesa",pos:["RW","LW","LM"],stamina:100},
+      {name:"Amine Adli",pos:["RW","ST"],stamina:100},
       {name:"Martin Terrier",pos:["LW","ST"],stamina:100},
-      {name:"Artem Stepanov",pos:["ST"],stamina:100},
+
+// ST
       {name:"Erling Haaland",pos:["ST"],stamina:100},
-      {name:"Julián Álvarez",pos:["ST","AM"],stamina:100}
+      {name:"Julián Álvarez",pos:["ST","AM"],stamina:100},
+      {name:"Patrik Schick",pos:["ST"],stamina:100},
+      {name:"A. Stepanov",pos:["ST"],stamina:100}
     ]
   },
 
@@ -267,34 +269,41 @@ const clubs = {
   munchen: {
     name: "Bayern München",
     players: [
-      {name:"Sven Ulreich",pos:["GK"],stamina:100},
       {name:"Marc-André ter Stegen",pos:["GK"],stamina:100},
+      {name:"Sven Ulreich",pos:["GK"],stamina:100},
       {name:"Daniel Peretz",pos:["GK"],stamina:100},
 
-      {name:"Murillo Santiago Costa dos Santos",pos:["CB"],stamina:100},
-      {name:"Raphaël Guerreiro",pos:["LB","CM"],stamina:100},
-      {name:"Sacha Boey",pos:["RB"],stamina:100},
-      {name:"Joshua Kimmich",pos:["CM","RB"],stamina:100},
-      {name:"Kim Min-jae",pos:["CB"],stamina:100},
+      {name:"Dayot Upamecano",pos:["CB"],stamina:100},
+      {name:"Murillo",pos:["CB"],stamina:100},
       {name:"Eric Dier",pos:["CB"],stamina:100},
       {name:"Hiroki Ito",pos:["CB","LB"],stamina:100},
-      {name:"Dayot Upamecano",pos:["CB"],stamina:100},
+      {name:"Kim Min Jae",pos:["CB"],stamina:100},
       {name:"Tarek Buchmann",pos:["CB"],stamina:100},
+
+      {name:"Joshua Kimmich",pos:["RB","CM"],stamina:100},
+      {name:"Sacha Boey",pos:["RB"],stamina:100},
       {name:"Josip Stanišić",pos:["RB","CB"],stamina:100},
+      {name:"Raphaël Guerreiro",pos:["LB","CM"],stamina:100},
 
-      {name:"João Neves",pos:["DM","CM"],stamina:100},
-      {name:"Konrad Laimer",pos:["CM","DM"],stamina:100},
+      {name:"Konrad Laimer",pos:["DM","CM"],stamina:100},
       {name:"Aleksandar Pavlović",pos:["DM","CM"],stamina:100},
-      {name:"Leon Goretzka",pos:["CM"],stamina:100},
 
-      {name:"Kingsley Coman",pos:["LW"],stamina:100},
+      {name:"João Neves",pos:["CM","DM"],stamina:100},
+      {name:"Leon Goretzka",pos:["CM"],stamina:100},
+      {name:"Orian Goren",pos:["CM"],stamina:100},
+
       {name:"Thomas Müller",pos:["AM","ST"],stamina:100},
-      {name:"Leroy Sané",pos:["RW","LW"],stamina:100},
-      {name:"Nestory Irankunda",pos:["LW"],stamina:100},
-      {name:"Rafael Leão",pos:["LW"],stamina:100},
+      {name:"Arda Güler",pos:["AM"],stamina:100},
       {name:"Arijon Ibrahimović",pos:["AM"],stamina:100},
-      {name:"Harry Kane",pos:["ST"],stamina:100},
-      {name:"Mathys Tel",pos:["ST","LW"],stamina:100}
+
+      {name:"Leroy Sané",pos:["RW","LW"],stamina:100},
+      {name:"Kingsley Coman",pos:["LW"],stamina:100},
+      {name:"Désiré Doué",pos:["LW","AM"],stamina:100},
+      {name:"Nestory Irankunda",pos:["RW"],stamina:100},
+      {name:"Rafael Leão",pos:["LW","ST"],stamina:100},
+
+      {name:"Mathys Tel",pos:["ST","LW"],stamina:100},
+      {name:"Kodai Tanaka",pos:["ST"],stamina:100}
     ]
   }
 };
@@ -304,6 +313,12 @@ const formations={
     ["GK",50,90],
     ["LB",15,70],["CB",35,70],["CB",55,70],["RB",75,70],
     ["CM",30,45],["CM",50,45],["CM",70,45],
+    ["LW",25,20],["ST",50,15],["RW",75,20]
+  ],
+  555:[
+    ["GK",50,90],
+    ["LB",15,70],["CB",35,70],["CB",55,70],["RB",75,70],
+    ["CM",30,45],["AM",50,35],["CM",70,45],
     ["LW",25,20],["ST",50,15],["RW",75,20]
   ],
   4231:[
@@ -373,7 +388,15 @@ function drawField(){
   field.innerHTML="";
   xi.forEach((s,i)=>{
     const d=document.createElement("div");
-    d.className="slot-xi";
+d.className="slot-xi";
+
+if(s.player){
+  if(isPositionMatch(s.player.pos, s.role)){
+    d.classList.add("good");
+  } else {
+    d.classList.add("bad");
+  }
+}
     d.style.left=s.x+"%";
     d.style.top=s.y+"%";
 
@@ -495,6 +518,26 @@ function clearSelection(){
   selectedPlayer=null;
   selectedFrom=null;
   document.querySelectorAll(".active").forEach(e=>e.classList.remove("active"));
+}
+
+function isPositionMatch(playerPos, role){
+  // mapping role ke nama umum
+  const map = {
+    GK:["GK"],
+    CB:["CB"],
+    LB:["LB","FB"],
+    RB:["RB","FB"],
+    DM:["DM","CDM"],
+    CM:["CM"],
+    AM:["AM","CAM"],
+    LW:["LW","LM"],
+    RW:["RW","RM"],
+    ST:["ST","CF"]
+  };
+
+  if(!map[role]) return false;
+
+  return playerPos.some(p => map[role].includes(p));
 }
 </script>
 
